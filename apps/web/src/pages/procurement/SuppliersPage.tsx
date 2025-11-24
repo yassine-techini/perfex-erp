@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, getErrorMessage, type ApiResponse } from '@/lib/api';
+import { api, type ApiResponse } from '@/lib/api';
 import type { Supplier } from '@perfex/shared';
 
 export function SuppliersPage() {

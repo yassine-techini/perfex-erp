@@ -4,6 +4,7 @@
  */
 
 // Types
+export * from './types/api';
 export * from './types/auth';
 export * from './types/finance';
 export * from './types/crm';

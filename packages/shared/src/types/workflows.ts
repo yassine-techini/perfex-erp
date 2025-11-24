@@ -97,13 +97,13 @@ export interface Approval {
 }
 
 // Activity Feed types
-export type ActivityType = 'create' | 'update' | 'delete' | 'comment' | 'approve' | 'reject' | 'status_change';
+export type ActivityFeedType = 'create' | 'update' | 'delete' | 'comment' | 'approve' | 'reject' | 'status_change';
 
 export interface ActivityFeed {
   id: string;
   organizationId: string;
   userId: string | null;
-  activityType: ActivityType;
+  activityType: ActivityFeedType;
   entityType: string;
   entityId: string | null;
   title: string;

@@ -12,7 +12,6 @@ export function WorkflowsPage() {
   const [activeTab, setActiveTab] = useState<'workflows' | 'approvals' | 'webhooks' | 'api-keys' | 'tags'>('workflows');
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
 
   // Fetch workflows
   const { data: workflows, isLoading: loadingWorkflows } = useQuery({

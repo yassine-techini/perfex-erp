@@ -51,7 +51,7 @@ export function InventoryPage() {
 
   // Get unique categories from items
   const categories = Array.from(
-    new Set(items?.map(item => item.category).filter(Boolean) || [])
+    new Set(items?.map(item => item.category).filter((c): c is string => Boolean(c)) || [])
   );
 
   // Create item mutation
