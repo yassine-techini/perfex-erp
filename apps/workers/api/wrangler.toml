@@ -5,7 +5,7 @@ compatibility_date = "2024-11-24"
 account_id = "6435a77d3ce17b7de468c6618e7b2b14"
 
 # Node.js compatibility
-node_compat = true
+compatibility_flags = ["nodejs_compat"]
 
 # D1 Database
 [[d1_databases]]
