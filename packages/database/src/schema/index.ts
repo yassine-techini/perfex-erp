@@ -9,6 +9,7 @@ export * from './crm';
 export * from './projects';
 export * from './inventory';
 export * from './hr';
+export * from './procurement';
 
 // Export all tables for drizzle-kit
 export {
@@ -68,3 +69,13 @@ export {
   attendanceRecords,
   leaveBalances,
 } from './hr';
+
+export {
+  suppliers,
+  purchaseRequisitions,
+  purchaseRequisitionLines,
+  purchaseOrders,
+  purchaseOrderLines,
+  goodsReceivedNotes,
+  goodsReceivedLines,
+} from './procurement';

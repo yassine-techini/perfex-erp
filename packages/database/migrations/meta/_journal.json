@@ -43,6 +43,13 @@
       "when": 1764001305066,
       "tag": "0005_cultured_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1764003031170,
+      "tag": "0006_friendly_sage",
+      "breakpoints": true
     }
   ]
 }
