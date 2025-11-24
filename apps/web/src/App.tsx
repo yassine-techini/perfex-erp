@@ -11,6 +11,8 @@ import { NewInvoicePage } from './pages/finance/NewInvoicePage';
 import { InvoiceDetailPage } from './pages/finance/InvoiceDetailPage';
 import { PaymentsPage } from './pages/finance/PaymentsPage';
 import { ReportsPage } from './pages/finance/ReportsPage';
+import { ContactsPage } from './pages/crm/ContactsPage';
+import { PipelinePage } from './pages/crm/PipelinePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,10 +53,10 @@ function App() {
               <Route path="reports" element={<ReportsPage />} />
             </Route>
 
-            {/* CRM routes - placeholder for now */}
+            {/* CRM routes */}
             <Route path="crm">
-              <Route path="contacts" element={<div className="p-6">Contacts Page - Coming Soon</div>} />
-              <Route path="pipeline" element={<div className="p-6">Pipeline Page - Coming Soon</div>} />
+              <Route path="contacts" element={<ContactsPage />} />
+              <Route path="pipeline" element={<PipelinePage />} />
             </Route>
           </Route>
 
