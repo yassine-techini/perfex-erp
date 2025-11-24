@@ -1,0 +1,142 @@
+CREATE TABLE `activities` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`type` text NOT NULL,
+	`subject` text NOT NULL,
+	`description` text,
+	`status` text DEFAULT 'pending' NOT NULL,
+	`priority` text DEFAULT 'medium' NOT NULL,
+	`due_date` integer,
+	`completed_at` integer,
+	`duration` integer,
+	`location` text,
+	`related_to_type` text,
+	`related_to_id` text,
+	`assigned_to` text,
+	`created_by` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `companies` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`name` text NOT NULL,
+	`website` text,
+	`phone` text,
+	`email` text,
+	`address` text,
+	`city` text,
+	`state` text,
+	`postal_code` text,
+	`country` text,
+	`industry` text,
+	`size` text,
+	`type` text NOT NULL,
+	`status` text DEFAULT 'active' NOT NULL,
+	`assigned_to` text,
+	`tags` text,
+	`notes` text,
+	`created_by` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `contacts` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`company_id` text,
+	`first_name` text NOT NULL,
+	`last_name` text NOT NULL,
+	`email` text NOT NULL,
+	`phone` text,
+	`mobile` text,
+	`position` text,
+	`department` text,
+	`address` text,
+	`city` text,
+	`state` text,
+	`postal_code` text,
+	`country` text,
+	`status` text DEFAULT 'active' NOT NULL,
+	`is_primary` integer DEFAULT false NOT NULL,
+	`assigned_to` text,
+	`tags` text,
+	`notes` text,
+	`created_by` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE TABLE `opportunities` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`company_id` text NOT NULL,
+	`contact_id` text,
+	`name` text NOT NULL,
+	`description` text,
+	`value` real NOT NULL,
+	`currency` text DEFAULT 'EUR' NOT NULL,
+	`stage_id` text NOT NULL,
+	`probability` integer DEFAULT 0 NOT NULL,
+	`expected_close_date` integer,
+	`actual_close_date` integer,
+	`status` text DEFAULT 'open' NOT NULL,
+	`lost_reason` text,
+	`assigned_to` text,
+	`tags` text,
+	`notes` text,
+	`created_by` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`contact_id`) REFERENCES `contacts`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`stage_id`) REFERENCES `pipeline_stages`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `opportunity_products` (
+	`id` text PRIMARY KEY NOT NULL,
+	`opportunity_id` text NOT NULL,
+	`product_id` text NOT NULL,
+	`quantity` real DEFAULT 1 NOT NULL,
+	`unit_price` real NOT NULL,
+	`discount` real DEFAULT 0 NOT NULL,
+	`total` real NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`opportunity_id`) REFERENCES `opportunities`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `pipeline_stages` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`name` text NOT NULL,
+	`order` integer NOT NULL,
+	`probability` integer DEFAULT 0 NOT NULL,
+	`color` text,
+	`active` integer DEFAULT true NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `products` (
+	`id` text PRIMARY KEY NOT NULL,
+	`organization_id` text NOT NULL,
+	`name` text NOT NULL,
+	`code` text,
+	`description` text,
+	`category` text,
+	`price` real NOT NULL,
+	`cost` real,
+	`currency` text DEFAULT 'EUR' NOT NULL,
+	`unit` text DEFAULT 'unit',
+	`active` integer DEFAULT true NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`organization_id`) REFERENCES `organizations`(`id`) ON UPDATE no action ON DELETE cascade
+);

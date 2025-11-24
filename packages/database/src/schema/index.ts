@@ -5,6 +5,7 @@
 
 export * from './users';
 export * from './finance';
+export * from './crm';
 
 // Export all tables for drizzle-kit
 export {
@@ -29,3 +30,13 @@ export {
   paymentAllocations,
   bankAccounts,
 } from './finance';
+
+export {
+  companies,
+  contacts,
+  pipelineStages,
+  opportunities,
+  activities,
+  products,
+  opportunityProducts,
+} from './crm';

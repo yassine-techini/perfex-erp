@@ -17,6 +17,10 @@ import invoicesRoutes from './routes/invoices';
 import paymentsRoutes from './routes/payments';
 import bankAccountsRoutes from './routes/bank-accounts';
 import reportsRoutes from './routes/reports';
+import companiesRoutes from './routes/companies';
+import contactsRoutes from './routes/contacts';
+import pipelineRoutes from './routes/pipeline';
+import opportunitiesRoutes from './routes/opportunities';
 import type { Env } from './types';
 
 /**
@@ -103,6 +107,12 @@ apiV1.route('/invoices', invoicesRoutes);
 apiV1.route('/payments', paymentsRoutes);
 apiV1.route('/bank-accounts', bankAccountsRoutes);
 apiV1.route('/reports', reportsRoutes);
+
+// Mount CRM routes
+apiV1.route('/companies', companiesRoutes);
+apiV1.route('/contacts', contactsRoutes);
+apiV1.route('/pipeline', pipelineRoutes);
+apiV1.route('/opportunities', opportunitiesRoutes);
 
 // Mount API routes
 app.route('/api/v1', apiV1);
