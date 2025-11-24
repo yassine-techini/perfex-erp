@@ -5,6 +5,10 @@ import { DashboardLayout } from './components/layouts/DashboardLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { AccountsPage } from './pages/finance/AccountsPage';
+import { InvoicesPage } from './pages/finance/InvoicesPage';
+import { PaymentsPage } from './pages/finance/PaymentsPage';
+import { ReportsPage } from './pages/finance/ReportsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,12 +39,12 @@ function App() {
           >
             <Route index element={<DashboardPage />} />
 
-            {/* Finance routes - placeholder for now */}
+            {/* Finance routes */}
             <Route path="finance">
-              <Route path="accounts" element={<div className="p-6">Accounts Page - Coming Soon</div>} />
-              <Route path="invoices" element={<div className="p-6">Invoices Page - Coming Soon</div>} />
-              <Route path="payments" element={<div className="p-6">Payments Page - Coming Soon</div>} />
-              <Route path="reports" element={<div className="p-6">Reports Page - Coming Soon</div>} />
+              <Route path="accounts" element={<AccountsPage />} />
+              <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="payments" element={<PaymentsPage />} />
+              <Route path="reports" element={<ReportsPage />} />
             </Route>
 
             {/* CRM routes - placeholder for now */}
