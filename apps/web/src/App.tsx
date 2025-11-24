@@ -7,6 +7,8 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AccountsPage } from './pages/finance/AccountsPage';
 import { InvoicesPage } from './pages/finance/InvoicesPage';
+import { NewInvoicePage } from './pages/finance/NewInvoicePage';
+import { InvoiceDetailPage } from './pages/finance/InvoiceDetailPage';
 import { PaymentsPage } from './pages/finance/PaymentsPage';
 import { ReportsPage } from './pages/finance/ReportsPage';
 
@@ -43,6 +45,8 @@ function App() {
             <Route path="finance">
               <Route path="accounts" element={<AccountsPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="invoices/new" element={<NewInvoicePage />} />
+              <Route path="invoices/:id" element={<InvoiceDetailPage />} />
               <Route path="payments" element={<PaymentsPage />} />
               <Route path="reports" element={<ReportsPage />} />
             </Route>
