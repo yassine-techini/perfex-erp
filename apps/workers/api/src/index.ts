@@ -14,6 +14,8 @@ import accountsRoutes from './routes/accounts';
 import journalsRoutes from './routes/journals';
 import journalEntriesRoutes from './routes/journal-entries';
 import invoicesRoutes from './routes/invoices';
+import paymentsRoutes from './routes/payments';
+import bankAccountsRoutes from './routes/bank-accounts';
 import type { Env } from './types';
 
 /**
@@ -97,6 +99,8 @@ apiV1.route('/accounts', accountsRoutes);
 apiV1.route('/journals', journalsRoutes);
 apiV1.route('/journal-entries', journalEntriesRoutes);
 apiV1.route('/invoices', invoicesRoutes);
+apiV1.route('/payments', paymentsRoutes);
+apiV1.route('/bank-accounts', bankAccountsRoutes);
 
 // Mount API routes
 app.route('/api/v1', apiV1);
