@@ -50,6 +50,13 @@
       "when": 1764003031170,
       "tag": "0006_friendly_sage",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1764003568880,
+      "tag": "0007_mixed_rage",
+      "breakpoints": true
     }
   ]
 }

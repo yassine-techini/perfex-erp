@@ -10,6 +10,7 @@ export * from './projects';
 export * from './inventory';
 export * from './hr';
 export * from './procurement';
+export * from './sales';
 
 // Export all tables for drizzle-kit
 export {
@@ -79,3 +80,10 @@ export {
   goodsReceivedNotes,
   goodsReceivedLines,
 } from './procurement';
+
+export {
+  quotes,
+  salesOrders,
+  salesOrderLines,
+  deliveryNotes,
+} from './sales';
