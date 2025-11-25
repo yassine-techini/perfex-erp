@@ -3,17 +3,20 @@
  * Sales pipeline and opportunities management
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api, getErrorMessage, type ApiResponse } from '@/lib/api';
-import type { Opportunity, CreateOpportunityInput, Company, Contact, PipelineStage } from '@perfex/shared';
-import { OpportunityModal } from '@/components/OpportunityModal';
+import type { Opportunity } from '@perfex/shared';
+import { EmptyState } from '@/components/EmptyState';
+import { Pagination } from '@/components/Pagination';
 
 export function PipelinePage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>('open');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Fetch opportunities
   const { data: opportunities, isLoading, error } = useQuery({
@@ -36,67 +39,6 @@ export function PipelinePage() {
     },
   });
 
-  // Fetch companies for modal dropdown
-  const { data: companies } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<Company[]>>('/companies');
-      return response.data.data;
-    },
-  });
-
-  // Fetch contacts for modal dropdown
-  const { data: contacts } = useQuery({
-    queryKey: ['contacts'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<Contact[]>>('/contacts');
-      return response.data.data;
-    },
-  });
-
-  // Fetch pipeline stages for modal dropdown
-  const { data: stages } = useQuery({
-    queryKey: ['pipeline', 'stages'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<PipelineStage[]>>('/pipeline');
-      return response.data.data;
-    },
-  });
-
-  // Create opportunity mutation
-  const createOpportunity = useMutation({
-    mutationFn: async (data: CreateOpportunityInput) => {
-      const response = await api.post<ApiResponse<Opportunity>>('/opportunities', data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      setIsModalOpen(false);
-      setSelectedOpportunity(undefined);
-      alert('Opportunity created successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to create opportunity: ${getErrorMessage(error)}`);
-    },
-  });
-
-  // Update opportunity mutation
-  const updateOpportunity = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: CreateOpportunityInput }) => {
-      const response = await api.put<ApiResponse<Opportunity>>(`/opportunities/${id}`, data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      setIsModalOpen(false);
-      setSelectedOpportunity(undefined);
-      alert('Opportunity updated successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to update opportunity: ${getErrorMessage(error)}`);
-    },
-  });
-
   // Delete opportunity mutation
   const deleteOpportunity = useMutation({
     mutationFn: async (opportunityId: string) => {
@@ -112,26 +54,11 @@ export function PipelinePage() {
   });
 
   const handleAddOpportunity = () => {
-    setSelectedOpportunity(undefined);
-    setIsModalOpen(true);
+    navigate('/crm/pipeline/opportunities/new');
   };
 
-  const handleEditOpportunity = (opportunity: Opportunity) => {
-    setSelectedOpportunity(opportunity);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedOpportunity(undefined);
-  };
-
-  const handleModalSubmit = async (data: CreateOpportunityInput) => {
-    if (selectedOpportunity) {
-      await updateOpportunity.mutateAsync({ id: selectedOpportunity.id, data });
-    } else {
-      await createOpportunity.mutateAsync(data);
-    }
+  const handleEditOpportunity = (opportunityId: string) => {
+    navigate(`/crm/pipeline/opportunities/${opportunityId}/edit`);
   };
 
   const handleDelete = (opportunityId: string, opportunityName: string) => {
@@ -146,6 +73,25 @@ export function PipelinePage() {
     { value: 'won', label: 'Won' },
     { value: 'lost', label: 'Lost' },
   ];
+
+  // Calculate paginated data
+  const paginatedOpportunities = useMemo(() => {
+    if (!opportunities) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = opportunities.slice(startIndex, endIndex);
+    const total = opportunities.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [opportunities, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filter changes
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -196,7 +142,7 @@ export function PipelinePage() {
         {statusOptions.map((option) => (
           <button
             key={option.value}
-            onClick={() => setStatusFilter(option.value)}
+            onClick={() => handleStatusFilterChange(option.value)}
             className={`rounded-md px-3 py-1.5 text-sm font-medium ${
               statusFilter === option.value
                 ? 'bg-primary text-primary-foreground'
@@ -221,8 +167,9 @@ export function PipelinePage() {
           <div className="p-12 text-center">
             <p className="text-destructive">Error: {getErrorMessage(error)}</p>
           </div>
-        ) : opportunities && opportunities.length > 0 ? (
-          <div className="overflow-x-auto">
+        ) : paginatedOpportunities.data.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b bg-muted/50">
                 <tr>
@@ -247,7 +194,7 @@ export function PipelinePage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {opportunities.map((opportunity) => (
+                {paginatedOpportunities.data.map((opportunity) => (
                   <tr key={opportunity.id} className="hover:bg-muted/50">
                     <td className="px-6 py-4 text-sm">
                       <div className="font-medium">{opportunity.name}</div>
@@ -286,7 +233,7 @@ export function PipelinePage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                       <button
-                        onClick={() => handleEditOpportunity(opportunity)}
+                        onClick={() => handleEditOpportunity(opportunity.id)}
                         className="text-primary hover:text-primary/80 font-medium"
                       >
                         Edit
@@ -303,30 +250,28 @@ export function PipelinePage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={paginatedOpportunities.totalPages}
+            totalItems={paginatedOpportunities.total}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+          </>
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-muted-foreground">No opportunities found. Create your first deal to get started.</p>
-            <button
-              onClick={handleAddOpportunity}
-              className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              Create Opportunity
-            </button>
-          </div>
+          <EmptyState
+            title="No opportunities found"
+            description="Get started by creating your first sales opportunity. Track deals and manage your sales pipeline effectively."
+            icon="chart"
+            action={{
+              label: "Create Opportunity",
+              onClick: handleAddOpportunity,
+            }}
+          />
         )}
       </div>
-
-      {/* Opportunity Modal */}
-      <OpportunityModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleModalSubmit}
-        opportunity={selectedOpportunity}
-        companies={companies || []}
-        contacts={contacts || []}
-        stages={stages || []}
-        isSubmitting={createOpportunity.isPending || updateOpportunity.isPending}
-      />
     </div>
   );
 }
