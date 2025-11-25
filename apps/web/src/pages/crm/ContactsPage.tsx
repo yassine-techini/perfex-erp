@@ -3,18 +3,21 @@
  * Manage contacts and their company relationships
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api, getErrorMessage, type ApiResponse } from '@/lib/api';
-import type { ContactWithCompany, Contact, Company, CreateContactInput } from '@perfex/shared';
-import { ContactModal } from '@/components/ContactModal';
+import type { ContactWithCompany, Contact } from '@perfex/shared';
+import { EmptyState } from '@/components/EmptyState';
+import { Pagination } from '@/components/Pagination';
 
 export function ContactsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<Contact | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Fetch contacts with company details
   const { data: contacts, isLoading, error } = useQuery({
@@ -26,49 +29,6 @@ export function ContactsPage() {
 
       const response = await api.get<ApiResponse<ContactWithCompany[]>>(url);
       return response.data.data;
-    },
-  });
-
-  // Fetch companies for dropdown
-  const { data: companies } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<Company[]>>('/companies');
-      return response.data.data;
-    },
-  });
-
-  // Create contact mutation
-  const createContact = useMutation({
-    mutationFn: async (data: CreateContactInput) => {
-      const response = await api.post<ApiResponse<Contact>>('/contacts', data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      setIsModalOpen(false);
-      setSelectedContact(undefined);
-      alert('Contact created successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to create contact: ${getErrorMessage(error)}`);
-    },
-  });
-
-  // Update contact mutation
-  const updateContact = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: CreateContactInput }) => {
-      const response = await api.put<ApiResponse<Contact>>(`/contacts/${id}`, data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      setIsModalOpen(false);
-      setSelectedContact(undefined);
-      alert('Contact updated successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to update contact: ${getErrorMessage(error)}`);
     },
   });
 
@@ -87,26 +47,11 @@ export function ContactsPage() {
   });
 
   const handleAddContact = () => {
-    setSelectedContact(undefined);
-    setIsModalOpen(true);
+    navigate('/crm/contacts/new');
   };
 
-  const handleEditContact = (contact: Contact) => {
-    setSelectedContact(contact);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedContact(undefined);
-  };
-
-  const handleModalSubmit = async (data: CreateContactInput) => {
-    if (selectedContact) {
-      await updateContact.mutateAsync({ id: selectedContact.id, data });
-    } else {
-      await createContact.mutateAsync(data);
-    }
+  const handleEditContact = (contactId: string) => {
+    navigate(`/crm/contacts/${contactId}/edit`);
   };
 
   const handleDelete = (contactId: string, contactName: string) => {
@@ -120,6 +65,30 @@ export function ContactsPage() {
     { value: 'active', label: 'Active' },
     { value: 'inactive', label: 'Inactive' },
   ];
+
+  // Calculate paginated data
+  const paginatedContacts = useMemo(() => {
+    if (!contacts) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = contacts.slice(startIndex, endIndex);
+    const total = contacts.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [contacts, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -146,7 +115,7 @@ export function ContactsPage() {
             type="text"
             placeholder="Search contacts by name, email, or phone..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
@@ -154,7 +123,7 @@ export function ContactsPage() {
           {statusOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => setStatusFilter(option.value)}
+              onClick={() => handleStatusFilterChange(option.value)}
               className={`rounded-md px-3 py-2 text-sm font-medium ${
                 statusFilter === option.value
                   ? 'bg-primary text-primary-foreground'
@@ -180,8 +149,9 @@ export function ContactsPage() {
           <div className="p-12 text-center">
             <p className="text-destructive">Error: {getErrorMessage(error)}</p>
           </div>
-        ) : contacts && contacts.length > 0 ? (
-          <div className="overflow-x-auto">
+        ) : paginatedContacts.data.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b bg-muted/50">
                 <tr>
@@ -209,7 +179,7 @@ export function ContactsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {contacts.map((contact) => (
+                {paginatedContacts.data.map((contact) => (
                   <tr key={contact.id} className="hover:bg-muted/50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div>
@@ -255,7 +225,7 @@ export function ContactsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                       <button
-                        onClick={() => handleEditContact(contact)}
+                        onClick={() => handleEditContact(contact.id)}
                         className="text-primary hover:text-primary/80 font-medium"
                       >
                         Edit
@@ -272,16 +242,26 @@ export function ContactsPage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={paginatedContacts.totalPages}
+            totalItems={paginatedContacts.total}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+          </>
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-muted-foreground">No contacts found. Add your first contact to get started.</p>
-            <button
-              onClick={handleAddContact}
-              className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              Add Contact
-            </button>
-          </div>
+          <EmptyState
+            title="No contacts found"
+            description="Get started by adding your first contact. Contacts help you manage relationships with individuals at your customer companies."
+            icon="users"
+            action={{
+              label: "Add Contact",
+              onClick: handleAddContact,
+            }}
+          />
         )}
       </div>
 
@@ -312,16 +292,6 @@ export function ContactsPage() {
           </div>
         </div>
       )}
-
-      {/* Contact Modal */}
-      <ContactModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleModalSubmit}
-        contact={selectedContact}
-        companies={companies || []}
-        isSubmitting={createContact.isPending || updateContact.isPending}
-      />
     </div>
   );
 }
