@@ -10,6 +10,7 @@ Tous les environnements ont été déployés avec succès sur Cloudflare!
 
 ### Environnement Dev
 - **URL API**: https://perfex-api-dev.yassine-techini.workers.dev
+- **URL Frontend**: https://perfex-web-dev.pages.dev (https://3cc6c8cb.perfex-web-dev.pages.dev)
 - **Base de données**: perfex-db-dev (990c74a6-b0b6-4904-8d52-5f1968e06768)
 - **KV Sessions**: 2fc4dbf91ef149f4810d0614f3fc7dde
 - **KV Cache**: d9edec6c56cb4f3bbe68be2747d6d7e6
@@ -17,6 +18,7 @@ Tous les environnements ont été déployés avec succès sur Cloudflare!
 
 ### Environnement Staging
 - **URL API**: https://perfex-api-staging.yassine-techini.workers.dev
+- **URL Frontend**: https://perfex-web-staging.pages.dev (https://e5c0d6bb.perfex-web-staging.pages.dev)
 - **Base de données**: perfex-db-staging (23e79bcb-34c8-467c-a582-4f363fa1779c)
 - **KV Sessions**: 7a0c3cb3fbf047ca9d7f8977c9b98004
 - **KV Cache**: db57371d4269410bb4459e519f5c33c3
@@ -24,6 +26,7 @@ Tous les environnements ont été déployés avec succès sur Cloudflare!
 
 ### Environnement Production
 - **URL API**: https://perfex-api.yassine-techini.workers.dev
+- **URL Frontend**: https://perfex-web.pages.dev (https://25a0b990.perfex-web.pages.dev)
 - **Base de données**: perfex-db-prod (b615d292-465b-4292-9914-2263fd7a66eb)
 - **KV Sessions**: 85379b8924b444188374361b23898c75
 - **KV Cache**: f7fff34646004bdd80b6ce1f17fdc7aa
