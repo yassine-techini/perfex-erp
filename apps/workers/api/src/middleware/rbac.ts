@@ -30,6 +30,14 @@ export function checkPermission(permission: PermissionKey) {
       );
     }
 
+    // In development, all authenticated users have all permissions
+    // TODO: Implement proper RBAC with role-based permissions
+    const environment = c.env.ENVIRONMENT || 'production';
+    if (environment === 'development') {
+      await next();
+      return;
+    }
+
     try {
       const roleService = new RoleService(c.env.DB);
       const hasPermission = await roleService.hasPermission(
@@ -83,6 +91,14 @@ export function checkAnyPermission(...permissions: PermissionKey[]) {
         },
         401
       );
+    }
+
+    // In development, all authenticated users have all permissions
+    // TODO: Implement proper RBAC with role-based permissions
+    const environment = c.env.ENVIRONMENT || 'production';
+    if (environment === 'development') {
+      await next();
+      return;
     }
 
     try {
@@ -142,6 +158,14 @@ export function checkAllPermissions(...permissions: PermissionKey[]) {
         },
         401
       );
+    }
+
+    // In development, all authenticated users have all permissions
+    // TODO: Implement proper RBAC with role-based permissions
+    const environment = c.env.ENVIRONMENT || 'production';
+    if (environment === 'development') {
+      await next();
+      return;
     }
 
     try {

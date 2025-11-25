@@ -1,9 +1,10 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { DashboardLayout } from './components/layouts/DashboardLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { PasswordlessVerifyPage } from './pages/auth/PasswordlessVerifyPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AccountsPage } from './pages/finance/AccountsPage';
 import { InvoicesPage } from './pages/finance/InvoicesPage';
@@ -33,111 +34,45 @@ const queryClient = new QueryClient({
   },
 });
 
-const router = createBrowserRouter([
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/register',
-    element: <RegisterPage />,
-  },
-  {
-    path: '/',
-    element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        index: true,
-        element: <DashboardPage />,
-      },
-      {
-        path: 'finance/accounts',
-        element: <AccountsPage />,
-      },
-      {
-        path: 'finance/invoices',
-        element: <InvoicesPage />,
-      },
-      {
-        path: 'finance/invoices/new',
-        element: <NewInvoicePage />,
-      },
-      {
-        path: 'finance/invoices/:id',
-        element: <InvoiceDetailPage />,
-      },
-      {
-        path: 'finance/payments',
-        element: <PaymentsPage />,
-      },
-      {
-        path: 'finance/reports',
-        element: <ReportsPage />,
-      },
-      {
-        path: 'crm/companies',
-        element: <CompaniesPage />,
-      },
-      {
-        path: 'crm/contacts',
-        element: <ContactsPage />,
-      },
-      {
-        path: 'crm/pipeline',
-        element: <PipelinePage />,
-      },
-      {
-        path: 'projects',
-        element: <ProjectsPage />,
-      },
-      {
-        path: 'inventory',
-        element: <InventoryPage />,
-      },
-      {
-        path: 'hr/employees',
-        element: <EmployeesPage />,
-      },
-      {
-        path: 'procurement/suppliers',
-        element: <SuppliersPage />,
-      },
-      {
-        path: 'sales/orders',
-        element: <SalesOrdersPage />,
-      },
-      {
-        path: 'manufacturing/work-orders',
-        element: <WorkOrdersPage />,
-      },
-      {
-        path: 'assets',
-        element: <AssetsPage />,
-      },
-      {
-        path: 'workflows',
-        element: <WorkflowsPage />,
-      },
-      {
-        path: 'activity',
-        element: <ActivityFeedPage />,
-      },
-    ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
-  },
-]);
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/auth/passwordless" element={<PasswordlessVerifyPage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="finance/accounts" element={<AccountsPage />} />
+            <Route path="finance/invoices" element={<InvoicesPage />} />
+            <Route path="finance/invoices/new" element={<NewInvoicePage />} />
+            <Route path="finance/invoices/:id" element={<InvoiceDetailPage />} />
+            <Route path="finance/payments" element={<PaymentsPage />} />
+            <Route path="finance/reports" element={<ReportsPage />} />
+            <Route path="crm/companies" element={<CompaniesPage />} />
+            <Route path="crm/contacts" element={<ContactsPage />} />
+            <Route path="crm/pipeline" element={<PipelinePage />} />
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="inventory" element={<InventoryPage />} />
+            <Route path="hr/employees" element={<EmployeesPage />} />
+            <Route path="procurement/suppliers" element={<SuppliersPage />} />
+            <Route path="sales/orders" element={<SalesOrdersPage />} />
+            <Route path="manufacturing/work-orders" element={<WorkOrdersPage />} />
+            <Route path="assets" element={<AssetsPage />} />
+            <Route path="workflows" element={<WorkflowsPage />} />
+            <Route path="activity" element={<ActivityFeedPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

@@ -164,3 +164,21 @@ export const updateRoleSchema = z.object({
 });
 
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
+
+/**
+ * Request passwordless login schema
+ */
+export const requestPasswordlessLoginSchema = z.object({
+  email: emailSchema,
+});
+
+export type RequestPasswordlessLoginInput = z.infer<typeof requestPasswordlessLoginSchema>;
+
+/**
+ * Verify passwordless login schema
+ */
+export const verifyPasswordlessLoginSchema = z.object({
+  token: z.string().min(1, 'Login token is required'),
+});
+
+export type VerifyPasswordlessLoginInput = z.infer<typeof verifyPasswordlessLoginSchema>;

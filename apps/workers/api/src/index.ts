@@ -7,6 +7,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
+import { initializeDb } from './db';
 import authRoutes from './routes/auth';
 import organizationsRoutes from './routes/organizations';
 import rolesRoutes from './routes/roles';
@@ -44,6 +45,12 @@ const app = new Hono<{ Bindings: Env }>();
 
 // Logging
 app.use('*', logger());
+
+// Database initialization middleware
+app.use('*', async (c, next) => {
+  initializeDb(c.env.DB);
+  await next();
+});
 
 // CORS
 app.use(
