@@ -6,11 +6,11 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // Base URL from environment or default to local dev
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787/api/v1';
 
 // Create axios instance
 export const api = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -54,7 +54,7 @@ api.interceptors.response.use(
         }
 
         // Call refresh endpoint
-        const response = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh`, {
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refreshToken,
         });
 
