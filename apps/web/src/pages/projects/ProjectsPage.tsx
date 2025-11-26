@@ -3,19 +3,22 @@
  * Manage projects and track progress
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api, getErrorMessage, type ApiResponse } from '@/lib/api';
-import type { Project, CreateProjectInput, Company, Contact } from '@perfex/shared';
-import { ProjectModal } from '@/components/ProjectModal';
+import type { Project } from '@perfex/shared';
+import { EmptyState } from '@/components/EmptyState';
+import { Pagination } from '@/components/Pagination';
 
 export function ProjectsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Fetch projects
   const { data: projects, isLoading, error } = useQuery({
@@ -35,58 +38,6 @@ export function ProjectsPage() {
     },
   });
 
-  // Fetch companies for modal dropdown
-  const { data: companies } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<Company[]>>('/companies');
-      return response.data.data;
-    },
-  });
-
-  // Fetch contacts for modal dropdown
-  const { data: contacts } = useQuery({
-    queryKey: ['contacts'],
-    queryFn: async () => {
-      const response = await api.get<ApiResponse<Contact[]>>('/contacts');
-      return response.data.data;
-    },
-  });
-
-  // Create project mutation
-  const createProject = useMutation({
-    mutationFn: async (data: CreateProjectInput) => {
-      const response = await api.post<ApiResponse<Project>>('/projects', data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setIsModalOpen(false);
-      setSelectedProject(undefined);
-      alert('Project created successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to create project: ${getErrorMessage(error)}`);
-    },
-  });
-
-  // Update project mutation
-  const updateProject = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: CreateProjectInput }) => {
-      const response = await api.put<ApiResponse<Project>>(`/projects/${id}`, data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setIsModalOpen(false);
-      setSelectedProject(undefined);
-      alert('Project updated successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to update project: ${getErrorMessage(error)}`);
-    },
-  });
-
   // Delete project mutation
   const deleteProject = useMutation({
     mutationFn: async (projectId: string) => {
@@ -102,26 +53,11 @@ export function ProjectsPage() {
   });
 
   const handleAddProject = () => {
-    setSelectedProject(undefined);
-    setIsModalOpen(true);
+    navigate('/projects/new');
   };
 
-  const handleEditProject = (project: Project) => {
-    setSelectedProject(project);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedProject(undefined);
-  };
-
-  const handleModalSubmit = async (data: CreateProjectInput) => {
-    if (selectedProject) {
-      await updateProject.mutateAsync({ id: selectedProject.id, data });
-    } else {
-      await createProject.mutateAsync(data);
-    }
+  const handleEditProject = (projectId: string) => {
+    navigate(`/projects/${projectId}/edit`);
   };
 
   const handleDelete = (projectId: string, projectName: string) => {
@@ -146,6 +82,35 @@ export function ProjectsPage() {
     { value: 'high', label: 'High' },
     { value: 'urgent', label: 'Urgent' },
   ];
+
+  // Calculate paginated data
+  const paginatedProjects = useMemo(() => {
+    if (!projects) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = projects.slice(startIndex, endIndex);
+    const total = projects.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [projects, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handlePriorityFilterChange = (value: string) => {
+    setPriorityFilter(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -172,14 +137,14 @@ export function ProjectsPage() {
             type="text"
             placeholder="Search projects by name or description..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => handleStatusFilterChange(e.target.value)}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             {statusOptions.map((option) => (
@@ -190,7 +155,7 @@ export function ProjectsPage() {
           </select>
           <select
             value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
+            onChange={(e) => handlePriorityFilterChange(e.target.value)}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             {priorityOptions.map((option) => (
@@ -215,8 +180,9 @@ export function ProjectsPage() {
           <div className="p-12 text-center">
             <p className="text-destructive">Error: {getErrorMessage(error)}</p>
           </div>
-        ) : projects && projects.length > 0 ? (
-          <div className="overflow-x-auto">
+        ) : paginatedProjects.data.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b bg-muted/50">
                 <tr>
@@ -244,7 +210,7 @@ export function ProjectsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {projects.map((project) => (
+                {paginatedProjects.data.map((project) => (
                   <tr key={project.id} className="hover:bg-muted/50">
                     <td className="px-6 py-4 text-sm">
                       <div>
@@ -319,7 +285,7 @@ export function ProjectsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                       <button
-                        onClick={() => handleEditProject(project)}
+                        onClick={() => handleEditProject(project.id)}
                         className="text-primary hover:text-primary/80 font-medium"
                       >
                         Edit
@@ -336,16 +302,26 @@ export function ProjectsPage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={paginatedProjects.totalPages}
+            totalItems={paginatedProjects.total}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+          </>
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-muted-foreground">No projects found. Create your first project to get started.</p>
-            <button
-              onClick={handleAddProject}
-              className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              New Project
-            </button>
-          </div>
+          <EmptyState
+            title="No projects found"
+            description="Get started by creating your first project. Track tasks, milestones, and manage your team effectively."
+            icon="folder"
+            action={{
+              label: "New Project",
+              onClick: handleAddProject,
+            }}
+          />
         )}
       </div>
 
@@ -376,17 +352,6 @@ export function ProjectsPage() {
           </div>
         </div>
       )}
-
-      {/* Project Modal */}
-      <ProjectModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleModalSubmit}
-        project={selectedProject}
-        companies={companies || []}
-        contacts={contacts || []}
-        isSubmitting={createProject.isPending || updateProject.isPending}
-      />
     </div>
   );
 }

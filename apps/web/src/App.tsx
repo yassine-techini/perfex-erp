@@ -19,6 +19,7 @@ import { ContactFormPage } from './pages/crm/ContactFormPage';
 import { PipelinePage } from './pages/crm/PipelinePage';
 import { OpportunityFormPage } from './pages/crm/OpportunityFormPage';
 import { ProjectsPage } from './pages/projects/ProjectsPage';
+import { ProjectFormPage } from './pages/projects/ProjectFormPage';
 import { InventoryPage } from './pages/inventory/InventoryPage';
 import { EmployeesPage } from './pages/hr/EmployeesPage';
 import { SuppliersPage } from './pages/procurement/SuppliersPage';
@@ -70,6 +71,8 @@ function App() {
             <Route path="crm/pipeline/opportunities/new" element={<OpportunityFormPage />} />
             <Route path="crm/pipeline/opportunities/:id/edit" element={<OpportunityFormPage />} />
             <Route path="projects" element={<ProjectsPage />} />
+            <Route path="projects/new" element={<ProjectFormPage />} />
+            <Route path="projects/:id/edit" element={<ProjectFormPage />} />
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="hr/employees" element={<EmployeesPage />} />
             <Route path="procurement/suppliers" element={<SuppliersPage />} />
