@@ -7,6 +7,7 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { PasswordlessVerifyPage } from './pages/auth/PasswordlessVerifyPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AccountsPage } from './pages/finance/AccountsPage';
+import { AccountFormPage } from './pages/finance/AccountFormPage';
 import { InvoicesPage } from './pages/finance/InvoicesPage';
 import { NewInvoicePage } from './pages/finance/NewInvoicePage';
 import { InvoiceDetailPage } from './pages/finance/InvoiceDetailPage';
@@ -58,6 +59,8 @@ function App() {
           >
             <Route index element={<DashboardPage />} />
             <Route path="finance/accounts" element={<AccountsPage />} />
+            <Route path="finance/accounts/new" element={<AccountFormPage />} />
+            <Route path="finance/accounts/:id/edit" element={<AccountFormPage />} />
             <Route path="finance/invoices" element={<InvoicesPage />} />
             <Route path="finance/invoices/new" element={<NewInvoicePage />} />
             <Route path="finance/invoices/:id" element={<InvoiceDetailPage />} />

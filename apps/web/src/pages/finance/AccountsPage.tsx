@@ -3,17 +3,20 @@
  * Chart of accounts management
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api, getErrorMessage, type ApiResponse } from '@/lib/api';
-import type { Account, CreateAccountInput } from '@perfex/shared';
-import { AccountModal } from '@/components/AccountModal';
+import { type Account } from '@perfex/shared';
+import { EmptyState } from '@/components/EmptyState';
+import { Pagination } from '@/components/Pagination';
 
 export function AccountsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<string>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<Account | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Fetch accounts
   const { data: accounts, isLoading, error } = useQuery({
@@ -40,63 +43,31 @@ export function AccountsPage() {
     },
   });
 
-  // Create account mutation
-  const createAccount = useMutation({
-    mutationFn: async (data: CreateAccountInput) => {
-      const response = await api.post<ApiResponse<Account>>('/accounts', data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      setIsModalOpen(false);
-      setSelectedAccount(undefined);
-      alert('Account created successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to create account: ${getErrorMessage(error)}`);
-    },
-  });
-
-  // Update account mutation
-  const updateAccount = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: { name: string } }) => {
-      const response = await api.put<ApiResponse<Account>>(`/accounts/${id}`, data);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      setIsModalOpen(false);
-      setSelectedAccount(undefined);
-      alert('Account updated successfully!');
-    },
-    onError: (error) => {
-      alert(`Failed to update account: ${getErrorMessage(error)}`);
-    },
-  });
-
-  const handleModalSubmit = async (data: CreateAccountInput) => {
-    if (selectedAccount) {
-      // Update existing account (only name can be updated)
-      await updateAccount.mutateAsync({ id: selectedAccount.id, data: { name: data.name } });
-    } else {
-      // Create new account
-      await createAccount.mutateAsync(data);
-    }
-  };
-
   const handleAddAccount = () => {
-    setSelectedAccount(undefined);
-    setIsModalOpen(true);
+    navigate('/finance/accounts/new');
   };
 
-  const handleEditAccount = (account: Account) => {
-    setSelectedAccount(account);
-    setIsModalOpen(true);
+  const handleEditAccount = (accountId: string) => {
+    navigate(`/finance/accounts/${accountId}/edit`);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedAccount(undefined);
+  // Calculate paginated data
+  const paginatedAccounts = useMemo(() => {
+    if (!accounts) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = accounts.slice(startIndex, endIndex);
+    const total = accounts.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [accounts, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filter changes
+  const handleFilterChange = (value: string) => {
+    setFilter(value);
+    setCurrentPage(1);
   };
 
   const accountTypes = [
@@ -147,7 +118,7 @@ export function AccountsPage() {
         {accountTypes.map((type) => (
           <button
             key={type.value}
-            onClick={() => setFilter(type.value)}
+            onClick={() => handleFilterChange(type.value)}
             className={`rounded-md px-3 py-1.5 text-sm font-medium ${
               filter === type.value
                 ? 'bg-primary text-primary-foreground'
@@ -172,82 +143,99 @@ export function AccountsPage() {
           <div className="p-12 text-center">
             <p className="text-destructive">Error: {getErrorMessage(error)}</p>
           </div>
-        ) : accounts && accounts.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Code
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Currency
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {accounts.map((account) => (
-                  <tr key={account.id} className="hover:bg-muted/50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium">
-                      {account.code}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {account.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        account.type === 'asset' ? 'bg-blue-100 text-blue-800' :
-                        account.type === 'liability' ? 'bg-red-100 text-red-800' :
-                        account.type === 'equity' ? 'bg-purple-100 text-purple-800' :
-                        account.type === 'revenue' ? 'bg-green-100 text-green-800' :
-                        'bg-orange-100 text-orange-800'
-                      }`}>
-                        {account.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {account.currency}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {account.active ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          Inactive
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <button
-                        onClick={() => handleEditAccount(account)}
-                        className="text-primary hover:text-primary/80 font-medium"
-                      >
-                        Edit
-                      </button>
-                    </td>
+        ) : paginatedAccounts.data.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Code
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Currency
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y">
+                  {paginatedAccounts.data.map((account) => (
+                    <tr key={account.id} className="hover:bg-muted/50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium">
+                        {account.code}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {account.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          account.type === 'asset' ? 'bg-blue-100 text-blue-800' :
+                          account.type === 'liability' ? 'bg-red-100 text-red-800' :
+                          account.type === 'equity' ? 'bg-purple-100 text-purple-800' :
+                          account.type === 'revenue' ? 'bg-green-100 text-green-800' :
+                          'bg-orange-100 text-orange-800'
+                        }`}>
+                          {account.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {account.currency}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {account.active ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <button
+                          onClick={() => handleEditAccount(account.id)}
+                          className="text-primary hover:text-primary/80 font-medium"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginatedAccounts.totalPages}
+              totalItems={paginatedAccounts.total}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          </>
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-muted-foreground">No accounts found. Import a chart of accounts template to get started.</p>
-          </div>
+          <EmptyState
+            title="No accounts found"
+            description="Get started by importing a chart of accounts template (French Plan or SYSCOHADA) or create your first account manually."
+            icon="document"
+            action={{
+              label: "Add Account",
+              onClick: handleAddAccount,
+            }}
+          />
         )}
       </div>
 
@@ -265,16 +253,6 @@ export function AccountsPage() {
           })}
         </div>
       )}
-
-      {/* Account Modal */}
-      <AccountModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleModalSubmit}
-        account={selectedAccount}
-        accounts={accounts || []}
-        isSubmitting={createAccount.isPending || updateAccount.isPending}
-      />
     </div>
   );
 }
