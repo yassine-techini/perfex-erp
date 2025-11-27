@@ -31,6 +31,7 @@ import { SupplierFormPage } from './pages/procurement/SupplierFormPage';
 import { SalesOrdersPage } from './pages/sales/SalesOrdersPage';
 import { SalesOrderFormPage } from './pages/sales/SalesOrderFormPage';
 import { WorkOrdersPage } from './pages/manufacturing/WorkOrdersPage';
+import { WorkOrderFormPage } from './pages/manufacturing/WorkOrderFormPage';
 import { AssetsPage } from './pages/assets/AssetsPage';
 import { AssetFormPage } from './pages/assets/AssetFormPage';
 import { WorkflowsPage } from './pages/workflows/WorkflowsPage';
@@ -96,6 +97,8 @@ function App() {
             <Route path="sales/orders/new" element={<SalesOrderFormPage />} />
             <Route path="sales/orders/:id/edit" element={<SalesOrderFormPage />} />
             <Route path="manufacturing/work-orders" element={<WorkOrdersPage />} />
+            <Route path="manufacturing/work-orders/new" element={<WorkOrderFormPage />} />
+            <Route path="manufacturing/work-orders/:id/edit" element={<WorkOrderFormPage />} />
             <Route path="assets" element={<AssetsPage />} />
             <Route path="assets/new" element={<AssetFormPage />} />
             <Route path="assets/:id/edit" element={<AssetFormPage />} />
