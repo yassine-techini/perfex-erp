@@ -3,15 +3,21 @@
  * Manage automated workflows and approvals
  */
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import type { Workflow, ApiResponse } from '@perfex/shared';
+import { Pagination } from '@/components/Pagination';
 
 export function WorkflowsPage() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'workflows' | 'approvals' | 'webhooks' | 'api-keys' | 'tags'>('workflows');
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   // Fetch workflows
   const { data: workflows, isLoading: loadingWorkflows } = useQuery({
@@ -44,10 +50,41 @@ export function WorkflowsPage() {
     },
   });
 
+  // Delete workflow mutation
+  const deleteWorkflow = useMutation({
+    mutationFn: async (workflowId: string) => await api.delete(`/workflows/workflows/${workflowId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      queryClient.invalidateQueries({ queryKey: ['workflows-stats'] });
+      alert('Workflow deleted successfully!');
+    },
+  });
+
+  const handleCreateWorkflow = () => {
+    navigate('/workflows/new');
+  };
+
+  const handleEditWorkflow = (workflowId: string) => {
+    navigate(`/workflows/${workflowId}/edit`);
+  };
+
   const filteredWorkflows = workflows?.filter((workflow) => {
     const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
+
+  // Calculate paginated data
+  const paginatedWorkflows = useMemo(() => {
+    if (!filteredWorkflows) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = filteredWorkflows.slice(startIndex, endIndex);
+    const total = filteredWorkflows.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [filteredWorkflows, currentPage, itemsPerPage]);
 
   return (
     <div className="space-y-6">
@@ -57,6 +94,12 @@ export function WorkflowsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Workflow Automation</h1>
           <p className="text-gray-600 mt-1">Manage workflows, approvals, webhooks, and integrations</p>
         </div>
+        <button
+          onClick={handleCreateWorkflow}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Create Workflow
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -216,72 +259,101 @@ export function WorkflowsPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                 <p className="text-gray-600 mt-4">Loading workflows...</p>
               </div>
-            ) : filteredWorkflows && filteredWorkflows.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Entity Type
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Trigger
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Priority
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Created
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredWorkflows.map((workflow) => (
-                      <tr key={workflow.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{workflow.name}</div>
-                          {workflow.description && (
-                            <div className="text-sm text-gray-500">{workflow.description}</div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
-                            {workflow.entityType}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                            {workflow.triggerType.replace(/_/g, ' ')}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {workflow.priority}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 text-xs rounded ${
-                              workflow.isActive
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}
-                          >
-                            {workflow.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(workflow.createdAt).toLocaleDateString()}
-                        </td>
+            ) : paginatedWorkflows.data.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Entity Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Trigger
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Priority
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Created
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedWorkflows.data.map((workflow) => (
+                        <tr key={workflow.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{workflow.name}</div>
+                            {workflow.description && (
+                              <div className="text-sm text-gray-500">{workflow.description}</div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
+                              {workflow.entityType}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                              {workflow.triggerType.replace(/_/g, ' ')}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {workflow.priority}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 text-xs rounded ${
+                                workflow.isActive
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {workflow.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(workflow.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                            <button
+                              onClick={() => handleEditWorkflow(workflow.id)}
+                              className="text-primary hover:text-primary/80 font-medium"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteWorkflow.mutate(workflow.id)}
+                              className="text-red-600 hover:underline"
+                              disabled={deleteWorkflow.isPending}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={paginatedWorkflows.totalPages}
+                  totalItems={paginatedWorkflows.total}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                  onItemsPerPageChange={setItemsPerPage}
+                />
+              </>
             ) : (
               <div className="text-center py-12">
                 <svg
@@ -299,6 +371,12 @@ export function WorkflowsPage() {
                 </svg>
                 <p className="text-gray-600 mt-4">No workflows found</p>
                 <p className="text-gray-500 text-sm mt-2">Create your first workflow to automate business processes</p>
+                <button
+                  onClick={handleCreateWorkflow}
+                  className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Create Workflow
+                </button>
               </div>
             )}
           </div>
