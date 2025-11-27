@@ -7,7 +7,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
-import type { Workflow, Webhook, ApiResponse } from '@perfex/shared';
+import type { Workflow, Webhook, ApiKey, ApiResponse } from '@perfex/shared';
 import { Pagination } from '@/components/Pagination';
 
 export function WorkflowsPage() {
@@ -23,6 +23,9 @@ export function WorkflowsPage() {
   const [webhookSearchTerm, setWebhookSearchTerm] = useState('');
   const [webhookCurrentPage, setWebhookCurrentPage] = useState(1);
   const [webhookItemsPerPage, setWebhookItemsPerPage] = useState(25);
+  const [apiKeySearchTerm, setApiKeySearchTerm] = useState('');
+  const [apiKeyCurrentPage, setApiKeyCurrentPage] = useState(1);
+  const [apiKeyItemsPerPage, setApiKeyItemsPerPage] = useState(25);
 
   // Update activeTab when URL changes
   useEffect(() => {
@@ -108,6 +111,34 @@ export function WorkflowsPage() {
     navigate(`/workflows/webhooks/${webhookId}/edit`);
   };
 
+  // Fetch API keys
+  const { data: apiKeys, isLoading: loadingApiKeys } = useQuery({
+    queryKey: ['api-keys'],
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<ApiKey[]>>('/workflows/api-keys');
+      return response.data.data;
+    },
+    enabled: activeTab === 'api-keys',
+  });
+
+  // Delete API key mutation
+  const deleteApiKey = useMutation({
+    mutationFn: async (apiKeyId: string) => await api.delete(`/workflows/api-keys/${apiKeyId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['api-keys'] });
+      queryClient.invalidateQueries({ queryKey: ['workflows-stats'] });
+      alert('API key deleted successfully!');
+    },
+  });
+
+  const handleCreateApiKey = () => {
+    navigate('/workflows/api-keys/new');
+  };
+
+  const handleEditApiKey = (apiKeyId: string) => {
+    navigate(`/workflows/api-keys/${apiKeyId}/edit`);
+  };
+
   const filteredWorkflows = workflows?.filter((workflow) => {
     const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
@@ -144,6 +175,24 @@ export function WorkflowsPage() {
 
     return { data, total, totalPages };
   }, [filteredWebhooks, webhookCurrentPage, webhookItemsPerPage]);
+
+  // Filter and paginate API keys
+  const filteredApiKeys = apiKeys?.filter((apiKey) => {
+    const matchesSearch = apiKey.name.toLowerCase().includes(apiKeySearchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  const paginatedApiKeys = useMemo(() => {
+    if (!filteredApiKeys) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (apiKeyCurrentPage - 1) * apiKeyItemsPerPage;
+    const endIndex = startIndex + apiKeyItemsPerPage;
+    const data = filteredApiKeys.slice(startIndex, endIndex);
+    const total = filteredApiKeys.length;
+    const totalPages = Math.ceil(total / apiKeyItemsPerPage);
+
+    return { data, total, totalPages };
+  }, [filteredApiKeys, apiKeyCurrentPage, apiKeyItemsPerPage]);
 
   return (
     <div className="space-y-6">
@@ -586,12 +635,164 @@ export function WorkflowsPage() {
           </div>
         )}
 
+        {/* API Keys Tab */}
+        {activeTab === 'api-keys' && (
+          <div className="p-6">
+            {/* Search and Actions */}
+            <div className="flex gap-4 mb-6">
+              <input
+                type="text"
+                placeholder="Search API keys..."
+                value={apiKeySearchTerm}
+                onChange={(e) => setApiKeySearchTerm(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleCreateApiKey}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Create API Key
+              </button>
+            </div>
+
+            {/* API Keys Table */}
+            {loadingApiKeys ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="text-gray-600 mt-4">Loading API keys...</p>
+              </div>
+            ) : paginatedApiKeys.data.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Permissions
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Rate Limit
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Expires
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Last Used
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedApiKeys.data.map((apiKey) => (
+                        <tr key={apiKey.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{apiKey.name}</div>
+                            {apiKey.description && (
+                              <div className="text-sm text-gray-500">{apiKey.description}</div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {apiKey.permissions.length} permission{apiKey.permissions.length !== 1 ? 's' : ''}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {apiKey.rateLimit}/hour
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {apiKey.expiresAt
+                              ? new Date(apiKey.expiresAt).toLocaleDateString()
+                              : 'Never'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {apiKey.lastUsedAt
+                              ? new Date(apiKey.lastUsedAt).toLocaleString()
+                              : 'Never'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 text-xs rounded ${
+                                apiKey.isActive
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {apiKey.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                            <button
+                              onClick={() => handleEditApiKey(apiKey.id)}
+                              className="text-primary hover:text-primary/80 font-medium"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteApiKey.mutate(apiKey.id)}
+                              className="text-red-600 hover:underline"
+                              disabled={deleteApiKey.isPending}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <Pagination
+                  currentPage={apiKeyCurrentPage}
+                  totalPages={paginatedApiKeys.totalPages}
+                  totalItems={paginatedApiKeys.total}
+                  itemsPerPage={apiKeyItemsPerPage}
+                  onPageChange={setApiKeyCurrentPage}
+                  onItemsPerPageChange={setApiKeyItemsPerPage}
+                />
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                  />
+                </svg>
+                <p className="text-gray-600 mt-4">No API keys found</p>
+                <p className="text-gray-500 text-sm mt-2">Create your first API key for programmatic access</p>
+                <button
+                  onClick={handleCreateApiKey}
+                  className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Create API Key
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Other tabs placeholders */}
-        {activeTab !== 'workflows' && activeTab !== 'webhooks' && (
+        {activeTab !== 'workflows' && activeTab !== 'webhooks' && activeTab !== 'api-keys' && (
           <div className="p-6 text-center py-12">
             <p className="text-gray-600">
               {activeTab === 'approvals' && 'Approvals management coming soon'}
-              {activeTab === 'api-keys' && 'API Keys management coming soon'}
               {activeTab === 'tags' && 'Tags management coming soon'}
             </p>
           </div>
