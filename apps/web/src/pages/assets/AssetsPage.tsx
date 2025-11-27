@@ -2,15 +2,21 @@
  * Fixed Assets Page
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { api, type ApiResponse } from '@/lib/api';
 import type { FixedAsset } from '@perfex/shared';
+import { EmptyState } from '@/components/EmptyState';
+import { Pagination } from '@/components/Pagination';
 
 export function AssetsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   const { data: assets, isLoading } = useQuery({
     queryKey: ['fixed-assets', searchTerm, statusFilter],
@@ -41,6 +47,27 @@ export function AssetsPage() {
       alert('Asset deleted successfully!');
     },
   });
+
+  const handleAddAsset = () => {
+    navigate('/assets/new');
+  };
+
+  const handleEditAsset = (assetId: string) => {
+    navigate(`/assets/${assetId}/edit`);
+  };
+
+  // Calculate paginated data
+  const paginatedAssets = useMemo(() => {
+    if (!assets) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = assets.slice(startIndex, endIndex);
+    const total = assets.length;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return { data, total, totalPages };
+  }, [assets, currentPage, itemsPerPage]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -76,6 +103,12 @@ export function AssetsPage() {
           <h1 className="text-3xl font-bold">Fixed Assets</h1>
           <p className="text-muted-foreground">Manage equipment, property, and fixed assets</p>
         </div>
+        <button
+          onClick={handleAddAsset}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Add Asset
+        </button>
       </div>
 
       {stats && (
@@ -125,57 +158,85 @@ export function AssetsPage() {
 
       <div className="rounded-lg border bg-card">
         {isLoading ? (
-          <div className="p-8 text-center">Loading...</div>
-        ) : !assets || assets.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-muted-foreground">No assets found.</p>
+          <div className="flex items-center justify-center p-12">
+            <div className="text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+              <p className="mt-4 text-sm text-muted-foreground">Loading assets...</p>
+            </div>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Asset #</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Location</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Purchase Date</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Purchase Cost</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Current Value</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {assets.map((asset) => (
-                  <tr key={asset.id} className="hover:bg-muted/50">
-                    <td className="px-4 py-3 text-sm font-mono font-medium">{asset.assetNumber}</td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium">{asset.name}</div>
-                      {asset.model && <div className="text-sm text-muted-foreground">{asset.model}</div>}
-                    </td>
-                    <td className="px-4 py-3 text-sm">{asset.location || '-'}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(asset.status)}`}>
-                        {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{formatDate(asset.purchaseDate)}</td>
-                    <td className="px-4 py-3 text-right text-sm">{formatCurrency(asset.purchaseCost)}</td>
-                    <td className="px-4 py-3 text-right font-medium">{formatCurrency(asset.currentValue)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => deleteAsset.mutate(asset.id)}
-                        className="text-sm text-red-600 hover:underline"
-                        disabled={deleteAsset.isPending}
-                      >
-                        Delete
-                      </button>
-                    </td>
+        ) : paginatedAssets.data.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Asset #</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Location</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Purchase Date</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium">Purchase Cost</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium">Current Value</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y">
+                  {paginatedAssets.data.map((asset) => (
+                    <tr key={asset.id} className="hover:bg-muted/50">
+                      <td className="px-4 py-3 text-sm font-mono font-medium">{asset.assetNumber}</td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium">{asset.name}</div>
+                        {asset.model && <div className="text-sm text-muted-foreground">{asset.model}</div>}
+                      </td>
+                      <td className="px-4 py-3 text-sm">{asset.location || '-'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(asset.status)}`}>
+                          {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{formatDate(asset.purchaseDate)}</td>
+                      <td className="px-4 py-3 text-right text-sm">{formatCurrency(asset.purchaseCost)}</td>
+                      <td className="px-4 py-3 text-right font-medium">{formatCurrency(asset.currentValue)}</td>
+                      <td className="px-4 py-3 text-right space-x-2">
+                        <button
+                          onClick={() => handleEditAsset(asset.id)}
+                          className="text-sm text-primary hover:text-primary/80 font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteAsset.mutate(asset.id)}
+                          className="text-sm text-red-600 hover:underline"
+                          disabled={deleteAsset.isPending}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginatedAssets.totalPages}
+              totalItems={paginatedAssets.total}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          </>
+        ) : (
+          <EmptyState
+            title="No assets found"
+            description="Get started by adding your first fixed asset to track."
+            icon="document"
+            action={{
+              label: "Add Asset",
+              onClick: handleAddAsset,
+            }}
+          />
         )}
       </div>
     </div>

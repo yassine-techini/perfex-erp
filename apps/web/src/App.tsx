@@ -32,6 +32,7 @@ import { SalesOrdersPage } from './pages/sales/SalesOrdersPage';
 import { SalesOrderFormPage } from './pages/sales/SalesOrderFormPage';
 import { WorkOrdersPage } from './pages/manufacturing/WorkOrdersPage';
 import { AssetsPage } from './pages/assets/AssetsPage';
+import { AssetFormPage } from './pages/assets/AssetFormPage';
 import { WorkflowsPage } from './pages/workflows/WorkflowsPage';
 import { ActivityFeedPage } from './pages/ActivityFeedPage';
 
@@ -96,6 +97,8 @@ function App() {
             <Route path="sales/orders/:id/edit" element={<SalesOrderFormPage />} />
             <Route path="manufacturing/work-orders" element={<WorkOrdersPage />} />
             <Route path="assets" element={<AssetsPage />} />
+            <Route path="assets/new" element={<AssetFormPage />} />
+            <Route path="assets/:id/edit" element={<AssetFormPage />} />
             <Route path="workflows" element={<WorkflowsPage />} />
             <Route path="activity" element={<ActivityFeedPage />} />
           </Route>
