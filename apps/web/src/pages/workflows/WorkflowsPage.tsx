@@ -3,21 +3,33 @@
  * Manage automated workflows and approvals
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
-import type { Workflow, ApiResponse } from '@perfex/shared';
+import type { Workflow, Webhook, ApiResponse } from '@perfex/shared';
 import { Pagination } from '@/components/Pagination';
 
 export function WorkflowsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'workflows' | 'approvals' | 'webhooks' | 'api-keys' | 'tags'>('workflows');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') as 'workflows' | 'approvals' | 'webhooks' | 'api-keys' | 'tags' | null;
+  const [activeTab, setActiveTab] = useState<'workflows' | 'approvals' | 'webhooks' | 'api-keys' | 'tags'>(tabFromUrl || 'workflows');
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [webhookSearchTerm, setWebhookSearchTerm] = useState('');
+  const [webhookCurrentPage, setWebhookCurrentPage] = useState(1);
+  const [webhookItemsPerPage, setWebhookItemsPerPage] = useState(25);
+
+  // Update activeTab when URL changes
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
 
   // Fetch workflows
   const { data: workflows, isLoading: loadingWorkflows } = useQuery({
@@ -68,12 +80,40 @@ export function WorkflowsPage() {
     navigate(`/workflows/${workflowId}/edit`);
   };
 
+  // Fetch webhooks
+  const { data: webhooks, isLoading: loadingWebhooks } = useQuery({
+    queryKey: ['webhooks'],
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<Webhook[]>>('/workflows/webhooks');
+      return response.data.data;
+    },
+    enabled: activeTab === 'webhooks',
+  });
+
+  // Delete webhook mutation
+  const deleteWebhook = useMutation({
+    mutationFn: async (webhookId: string) => await api.delete(`/workflows/webhooks/${webhookId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] });
+      queryClient.invalidateQueries({ queryKey: ['workflows-stats'] });
+      alert('Webhook deleted successfully!');
+    },
+  });
+
+  const handleCreateWebhook = () => {
+    navigate('/workflows/webhooks/new');
+  };
+
+  const handleEditWebhook = (webhookId: string) => {
+    navigate(`/workflows/webhooks/${webhookId}/edit`);
+  };
+
   const filteredWorkflows = workflows?.filter((workflow) => {
     const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
-  // Calculate paginated data
+  // Calculate paginated data for workflows
   const paginatedWorkflows = useMemo(() => {
     if (!filteredWorkflows) return { data: [], total: 0, totalPages: 0 };
 
@@ -85,6 +125,25 @@ export function WorkflowsPage() {
 
     return { data, total, totalPages };
   }, [filteredWorkflows, currentPage, itemsPerPage]);
+
+  // Filter and paginate webhooks
+  const filteredWebhooks = webhooks?.filter((webhook) => {
+    const matchesSearch = webhook.name.toLowerCase().includes(webhookSearchTerm.toLowerCase()) ||
+                          webhook.url.toLowerCase().includes(webhookSearchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  const paginatedWebhooks = useMemo(() => {
+    if (!filteredWebhooks) return { data: [], total: 0, totalPages: 0 };
+
+    const startIndex = (webhookCurrentPage - 1) * webhookItemsPerPage;
+    const endIndex = startIndex + webhookItemsPerPage;
+    const data = filteredWebhooks.slice(startIndex, endIndex);
+    const total = filteredWebhooks.length;
+    const totalPages = Math.ceil(total / webhookItemsPerPage);
+
+    return { data, total, totalPages };
+  }, [filteredWebhooks, webhookCurrentPage, webhookItemsPerPage]);
 
   return (
     <div className="space-y-6">
@@ -382,12 +441,156 @@ export function WorkflowsPage() {
           </div>
         )}
 
+        {/* Webhooks Tab */}
+        {activeTab === 'webhooks' && (
+          <div className="p-6">
+            {/* Search and Actions */}
+            <div className="flex gap-4 mb-6">
+              <input
+                type="text"
+                placeholder="Search webhooks..."
+                value={webhookSearchTerm}
+                onChange={(e) => setWebhookSearchTerm(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleCreateWebhook}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Create Webhook
+              </button>
+            </div>
+
+            {/* Webhooks Table */}
+            {loadingWebhooks ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="text-gray-600 mt-4">Loading webhooks...</p>
+              </div>
+            ) : paginatedWebhooks.data.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          URL
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Events
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Last Triggered
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedWebhooks.data.map((webhook) => (
+                        <tr key={webhook.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{webhook.name}</div>
+                            {webhook.description && (
+                              <div className="text-sm text-gray-500">{webhook.description}</div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900 truncate max-w-xs">
+                              {webhook.url}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {webhook.events.length} event{webhook.events.length !== 1 ? 's' : ''}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 text-xs rounded ${
+                                webhook.isActive
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {webhook.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {webhook.lastTriggeredAt
+                              ? new Date(webhook.lastTriggeredAt).toLocaleString()
+                              : 'Never'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                            <button
+                              onClick={() => handleEditWebhook(webhook.id)}
+                              className="text-primary hover:text-primary/80 font-medium"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteWebhook.mutate(webhook.id)}
+                              className="text-red-600 hover:underline"
+                              disabled={deleteWebhook.isPending}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <Pagination
+                  currentPage={webhookCurrentPage}
+                  totalPages={paginatedWebhooks.totalPages}
+                  totalItems={paginatedWebhooks.total}
+                  itemsPerPage={webhookItemsPerPage}
+                  onPageChange={setWebhookCurrentPage}
+                  onItemsPerPageChange={setWebhookItemsPerPage}
+                />
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <p className="text-gray-600 mt-4">No webhooks found</p>
+                <p className="text-gray-500 text-sm mt-2">Create your first webhook to receive event notifications</p>
+                <button
+                  onClick={handleCreateWebhook}
+                  className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Create Webhook
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Other tabs placeholders */}
-        {activeTab !== 'workflows' && (
+        {activeTab !== 'workflows' && activeTab !== 'webhooks' && (
           <div className="p-6 text-center py-12">
             <p className="text-gray-600">
               {activeTab === 'approvals' && 'Approvals management coming soon'}
-              {activeTab === 'webhooks' && 'Webhooks management coming soon'}
               {activeTab === 'api-keys' && 'API Keys management coming soon'}
               {activeTab === 'tags' && 'Tags management coming soon'}
             </p>

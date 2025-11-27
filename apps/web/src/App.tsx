@@ -36,6 +36,7 @@ import { AssetsPage } from './pages/assets/AssetsPage';
 import { AssetFormPage } from './pages/assets/AssetFormPage';
 import { WorkflowsPage } from './pages/workflows/WorkflowsPage';
 import { WorkflowFormPage } from './pages/workflows/WorkflowFormPage';
+import { WebhookFormPage } from './pages/workflows/WebhookFormPage';
 import { ActivityFeedPage } from './pages/ActivityFeedPage';
 
 const queryClient = new QueryClient({
@@ -106,6 +107,8 @@ function App() {
             <Route path="workflows" element={<WorkflowsPage />} />
             <Route path="workflows/new" element={<WorkflowFormPage />} />
             <Route path="workflows/:id/edit" element={<WorkflowFormPage />} />
+            <Route path="workflows/webhooks/new" element={<WebhookFormPage />} />
+            <Route path="workflows/webhooks/:id/edit" element={<WebhookFormPage />} />
             <Route path="activity" element={<ActivityFeedPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
