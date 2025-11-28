@@ -25,10 +25,16 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
   });
+
+  const fillDemoCredentials = () => {
+    setValue('email', 'demo@perfex.io');
+    setValue('password', 'Demo@2024!');
+  };
 
   const onSubmit = async (data: LoginInput) => {
     console.log('[LoginPage] Form submitted', { email: data.email });
@@ -192,6 +198,35 @@ export function LoginPage() {
             </button>
           </div>
         </form>
+
+        {/* Demo Credentials */}
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3 flex-1">
+              <h3 className="text-sm font-medium text-amber-800">
+                Demo Account
+              </h3>
+              <div className="mt-2 text-sm text-amber-700">
+                <p><strong>Email:</strong> demo@perfex.io</p>
+                <p><strong>Password:</strong> Demo@2024!</p>
+              </div>
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={fillDemoCredentials}
+                  className="inline-flex items-center px-3 py-1.5 border border-amber-300 text-xs font-medium rounded text-amber-800 bg-amber-100 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                >
+                  Use demo credentials
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {showPasswordless && (
           <div className="mt-6 rounded-lg bg-blue-50 border border-blue-200 p-6">
