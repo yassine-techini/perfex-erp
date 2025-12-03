@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ScanLine,
   Package,
@@ -20,6 +20,7 @@ import {
   Shield,
   Edit,
   Eye,
+  X,
 } from 'lucide-react';
 
 interface Lot {
@@ -73,14 +74,47 @@ interface HaccpStats {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+interface LotFormData {
+  lotNumber: string;
+  type: 'raw_material' | 'semi_finished' | 'finished_product';
+  initialQuantity: number;
+  unit: string;
+  productionDate: string;
+  receptionDate: string;
+  expiryDate: string;
+  status: 'available' | 'reserved' | 'quarantine';
+  qualityStatus: 'pending' | 'approved' | 'rejected' | 'conditional';
+  location: string;
+  supplierLotNumber: string;
+  notes: string;
+}
+
+const defaultLotForm: LotFormData = {
+  lotNumber: '',
+  type: 'raw_material',
+  initialQuantity: 0,
+  unit: 'kg',
+  productionDate: '',
+  receptionDate: new Date().toISOString().split('T')[0],
+  expiryDate: '',
+  status: 'available',
+  qualityStatus: 'pending',
+  location: '',
+  supplierLotNumber: '',
+  notes: '',
+};
+
 export function TraceabilityPage() {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'lots' | 'haccp' | 'temperature' | 'cleaning'>('lots');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [showLotForm, setShowLotForm] = useState(false);
   const [showCpForm, setShowCpForm] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  void showLotForm; void showCpForm; // Suppress unused warnings - forms to be implemented
+  void showCpForm; // To be implemented - HACCP control point form
+  const [editingLot, setEditingLot] = useState<Lot | null>(null);
+  const [lotFormData, setLotFormData] = useState<LotFormData>(defaultLotForm);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const token = localStorage.getItem('accessToken');
 
@@ -154,6 +188,105 @@ export function TraceabilityPage() {
     },
     enabled: activeTab === 'haccp',
   });
+
+  // Create/Update lot mutation
+  const saveLotMutation = useMutation({
+    mutationFn: async (data: LotFormData & { id?: string }) => {
+      const url = data.id
+        ? `${API_URL}/traceability/lots/${data.id}`
+        : `${API_URL}/traceability/lots`;
+      const method = data.id ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          lotNumber: data.lotNumber,
+          type: data.type,
+          initialQuantity: data.initialQuantity,
+          currentQuantity: data.initialQuantity,
+          unit: data.unit,
+          productionDate: data.productionDate || null,
+          receptionDate: data.receptionDate || null,
+          expiryDate: data.expiryDate || null,
+          status: data.status,
+          qualityStatus: data.qualityStatus,
+          location: data.location || null,
+          supplierLotNumber: data.supplierLotNumber || null,
+          notes: data.notes || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'Failed to save lot');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lots'] });
+      queryClient.invalidateQueries({ queryKey: ['lot-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['expiring-lots'] });
+      closeForm();
+    },
+    onError: (error: Error) => {
+      setFormError(error.message);
+    },
+  });
+
+  // Helper functions
+  const openNewLotForm = () => {
+    setEditingLot(null);
+    setLotFormData(defaultLotForm);
+    setFormError(null);
+    setShowLotForm(true);
+  };
+
+  const openEditLotForm = (lot: Lot) => {
+    setEditingLot(lot);
+    setLotFormData({
+      lotNumber: lot.lotNumber,
+      type: lot.type,
+      initialQuantity: lot.initialQuantity,
+      unit: lot.unit,
+      productionDate: lot.productionDate?.split('T')[0] || '',
+      receptionDate: lot.receptionDate?.split('T')[0] || '',
+      expiryDate: lot.expiryDate?.split('T')[0] || '',
+      status: lot.status as LotFormData['status'],
+      qualityStatus: lot.qualityStatus,
+      location: lot.location || '',
+      supplierLotNumber: lot.supplierLotNumber || '',
+      notes: lot.notes || '',
+    });
+    setFormError(null);
+    setShowLotForm(true);
+  };
+
+  const closeForm = () => {
+    setShowLotForm(false);
+    setShowCpForm(false);
+    setEditingLot(null);
+    setLotFormData(defaultLotForm);
+    setFormError(null);
+  };
+
+  const handleSaveLot = () => {
+    if (!lotFormData.lotNumber) {
+      setFormError('Le numéro de lot est requis');
+      return;
+    }
+    if (lotFormData.initialQuantity <= 0) {
+      setFormError('La quantité doit être supérieure à 0');
+      return;
+    }
+    saveLotMutation.mutate({
+      ...lotFormData,
+      id: editingLot?.id,
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -368,7 +501,7 @@ export function TraceabilityPage() {
                 <option value="consumed">Consommé</option>
               </select>
               <button
-                onClick={() => setShowLotForm(true)}
+                onClick={openNewLotForm}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="h-5 w-5 mr-2" />
@@ -463,10 +596,17 @@ export function TraceabilityPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end space-x-2">
-                          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                          <button
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+                            title="Voir"
+                          >
                             <Eye className="h-4 w-4 text-gray-500" />
                           </button>
-                          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                          <button
+                            onClick={() => openEditLotForm(lot)}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+                            title="Modifier"
+                          >
                             <Edit className="h-4 w-4 text-gray-500" />
                           </button>
                         </div>
@@ -632,6 +772,218 @@ export function TraceabilityPage() {
             <Shield className="h-12 w-12 mx-auto text-gray-300 mb-4" />
             <p>Aucun enregistrement de nettoyage</p>
             <p className="text-sm">Enregistrez les opérations de nettoyage et désinfection</p>
+          </div>
+        </div>
+      )}
+
+      {/* Lot Form Modal */}
+      {showLotForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {editingLot ? 'Modifier le lot' : 'Nouveau lot'}
+              </h2>
+              <button
+                onClick={closeForm}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {formError && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
+                  {formError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Numéro de lot *
+                  </label>
+                  <input
+                    type="text"
+                    value={lotFormData.lotNumber}
+                    onChange={(e) => setLotFormData({ ...lotFormData, lotNumber: e.target.value })}
+                    placeholder="LOT-2024-001"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Type *
+                  </label>
+                  <select
+                    value={lotFormData.type}
+                    onChange={(e) => setLotFormData({ ...lotFormData, type: e.target.value as LotFormData['type'] })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="raw_material">Matière première</option>
+                    <option value="semi_finished">Semi-fini</option>
+                    <option value="finished_product">Produit fini</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Quantité initiale *
+                  </label>
+                  <input
+                    type="number"
+                    value={lotFormData.initialQuantity}
+                    onChange={(e) => setLotFormData({ ...lotFormData, initialQuantity: parseFloat(e.target.value) || 0 })}
+                    min="0"
+                    step="0.01"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Unité *
+                  </label>
+                  <select
+                    value={lotFormData.unit}
+                    onChange={(e) => setLotFormData({ ...lotFormData, unit: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="kg">Kilogrammes (kg)</option>
+                    <option value="g">Grammes (g)</option>
+                    <option value="L">Litres (L)</option>
+                    <option value="mL">Millilitres (mL)</option>
+                    <option value="unit">Unités</option>
+                    <option value="piece">Pièces</option>
+                    <option value="box">Cartons</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Date de réception
+                  </label>
+                  <input
+                    type="date"
+                    value={lotFormData.receptionDate}
+                    onChange={(e) => setLotFormData({ ...lotFormData, receptionDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Date de production
+                  </label>
+                  <input
+                    type="date"
+                    value={lotFormData.productionDate}
+                    onChange={(e) => setLotFormData({ ...lotFormData, productionDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Date limite de consommation (DLC)
+                  </label>
+                  <input
+                    type="date"
+                    value={lotFormData.expiryDate}
+                    onChange={(e) => setLotFormData({ ...lotFormData, expiryDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Statut
+                  </label>
+                  <select
+                    value={lotFormData.status}
+                    onChange={(e) => setLotFormData({ ...lotFormData, status: e.target.value as LotFormData['status'] })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="available">Disponible</option>
+                    <option value="reserved">Réservé</option>
+                    <option value="quarantine">Quarantaine</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Statut qualité
+                  </label>
+                  <select
+                    value={lotFormData.qualityStatus}
+                    onChange={(e) => setLotFormData({ ...lotFormData, qualityStatus: e.target.value as LotFormData['qualityStatus'] })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="pending">En attente</option>
+                    <option value="approved">Approuvé</option>
+                    <option value="rejected">Rejeté</option>
+                    <option value="conditional">Conditionnel</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Emplacement
+                  </label>
+                  <input
+                    type="text"
+                    value={lotFormData.location}
+                    onChange={(e) => setLotFormData({ ...lotFormData, location: e.target.value })}
+                    placeholder="Zone A - Rayon 3"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    N° Lot fournisseur
+                  </label>
+                  <input
+                    type="text"
+                    value={lotFormData.supplierLotNumber}
+                    onChange={(e) => setLotFormData({ ...lotFormData, supplierLotNumber: e.target.value })}
+                    placeholder="Référence lot du fournisseur"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    value={lotFormData.notes}
+                    onChange={(e) => setLotFormData({ ...lotFormData, notes: e.target.value })}
+                    rows={3}
+                    placeholder="Notes additionnelles..."
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t dark:border-gray-700">
+              <button
+                onClick={closeForm}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSaveLot}
+                disabled={saveLotMutation.isPending}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {saveLotMutation.isPending ? 'Enregistrement...' : editingLot ? 'Modifier' : 'Créer'}
+              </button>
+            </div>
           </div>
         </div>
       )}
