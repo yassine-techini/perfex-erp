@@ -73,6 +73,7 @@ export function PayrollPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedPeriod, setSelectedPeriod] = useState<PayrollPeriod | null>(null);
   const [showNewPeriodForm, setShowNewPeriodForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const token = localStorage.getItem('accessToken');
 
@@ -136,12 +137,20 @@ export function PayrollPage() {
           endDate: endDate.toISOString(),
         }),
       });
-      if (!response.ok) throw new Error('Failed to create period');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || `Erreur ${response.status}: Échec de création`);
+      }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payroll-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['payroll-stats'] });
       setShowNewPeriodForm(false);
+      setFormError(null);
+    },
+    onError: (error: Error) => {
+      setFormError(error.message);
     },
   });
 
@@ -184,7 +193,10 @@ export function PayrollPage() {
             ))}
           </select>
           <button
-            onClick={() => setShowNewPeriodForm(true)}
+            onClick={() => {
+              setFormError(null);
+              setShowNewPeriodForm(true);
+            }}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -482,9 +494,15 @@ export function PayrollPage() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Nouvelle période de paie
             </h3>
+            {formError && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
+                {formError}
+              </div>
+            )}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                setFormError(null);
                 const formData = new FormData(e.currentTarget);
                 createPeriodMutation.mutate({
                   year: parseInt(formData.get('year') as string),
@@ -525,7 +543,10 @@ export function PayrollPage() {
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setShowNewPeriodForm(false)}
+                  onClick={() => {
+                    setShowNewPeriodForm(false);
+                    setFormError(null);
+                  }}
                   className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
                 >
                   Annuler
