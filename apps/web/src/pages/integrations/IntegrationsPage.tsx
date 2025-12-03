@@ -84,6 +84,16 @@ export function IntegrationsPage() {
   const [editingConfig, setEditingConfig] = useState<IntegrationConfig | null>(null);
   const [showCredentials, setShowCredentials] = useState<Record<string, boolean>>({});
 
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    environment: 'production' as 'sandbox' | 'production',
+    isDefault: false,
+    credentials: {} as Record<string, string>,
+  });
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
   const token = localStorage.getItem('accessToken');
 
   // Fetch available providers
@@ -175,6 +185,137 @@ export function IntegrationsPage() {
       queryClient.invalidateQueries({ queryKey: ['integration-configs'] });
     },
   });
+
+  // Create/Update config mutation
+  const saveConfigMutation = useMutation({
+    mutationFn: async (data: {
+      id?: string;
+      providerId: string;
+      providerCategory: string;
+      name: string;
+      credentials: Record<string, string>;
+      environment: string;
+      isDefault: boolean;
+    }) => {
+      const url = data.id
+        ? `${API_URL}/integrations/configs/${data.id}`
+        : `${API_URL}/integrations/configs`;
+      const method = data.id ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          providerId: data.providerId,
+          providerCategory: data.providerCategory,
+          name: data.name,
+          credentials: data.credentials,
+          environment: data.environment,
+          isDefault: data.isDefault,
+          isEnabled: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'Save failed');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['integration-configs'] });
+      queryClient.invalidateQueries({ queryKey: ['integration-stats'] });
+      setShowConfigModal(false);
+      resetForm();
+    },
+  });
+
+  // Reset form helper
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      environment: 'production',
+      isDefault: false,
+      credentials: {},
+    });
+    setFormError(null);
+    setSelectedProvider(null);
+    setEditingConfig(null);
+  };
+
+  // Open modal for new config
+  const openNewConfigModal = (provider: Provider) => {
+    setSelectedProvider(provider);
+    setEditingConfig(null);
+    setFormData({
+      name: `${provider.name} - Production`,
+      environment: 'production',
+      isDefault: false,
+      credentials: {},
+    });
+    setFormError(null);
+    setShowConfigModal(true);
+  };
+
+  // Open modal for editing
+  const openEditModal = (config: IntegrationConfig, provider: Provider | undefined) => {
+    setEditingConfig(config);
+    setSelectedProvider(provider || null);
+    setFormData({
+      name: config.name,
+      environment: config.environment as 'sandbox' | 'production',
+      isDefault: config.isDefault,
+      credentials: {}, // Don't pre-fill credentials for security
+    });
+    setFormError(null);
+    setShowConfigModal(true);
+  };
+
+  // Handle form submission
+  const handleSaveConfig = async () => {
+    if (!selectedProvider && !editingConfig) {
+      setFormError('Veuillez sélectionner un fournisseur');
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      setFormError('Le nom est requis');
+      return;
+    }
+
+    // Validate credentials for new configs
+    if (!editingConfig && selectedProvider) {
+      const missingCreds = selectedProvider.requiredCredentials.filter(
+        cred => !formData.credentials[cred]?.trim()
+      );
+      if (missingCreds.length > 0) {
+        setFormError(`Champs requis: ${missingCreds.join(', ')}`);
+        return;
+      }
+    }
+
+    setFormError(null);
+    setIsSaving(true);
+
+    try {
+      await saveConfigMutation.mutateAsync({
+        id: editingConfig?.id,
+        providerId: selectedProvider?.id || editingConfig?.providerId || '',
+        providerCategory: activeCategory,
+        name: formData.name,
+        credentials: formData.credentials,
+        environment: formData.environment,
+        isDefault: formData.isDefault,
+      });
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const getStatusBadge = (config: IntegrationConfig) => {
     if (!config.isEnabled) {
@@ -350,11 +491,7 @@ export function IntegrationsPage() {
                     )}
                     {!isConfigured && (
                       <button
-                        onClick={() => {
-                          setSelectedProvider(provider);
-                          setEditingConfig(null);
-                          setShowConfigModal(true);
-                        }}
+                        onClick={() => openNewConfigModal(provider)}
                         className="text-xs text-blue-600 hover:underline"
                       >
                         Configurer
@@ -428,11 +565,7 @@ export function IntegrationsPage() {
                           </button>
 
                           <button
-                            onClick={() => {
-                              setEditingConfig(config);
-                              setSelectedProvider(provider || null);
-                              setShowConfigModal(true);
-                            }}
+                            onClick={() => openEditModal(config, provider)}
                             className="p-2 text-gray-400 hover:text-gray-600"
                             title="Modifier"
                           >
@@ -486,24 +619,36 @@ export function IntegrationsPage() {
         </div>
       </div>
 
-      {/* Configuration Modal - Placeholder */}
+      {/* Configuration Modal */}
       {showConfigModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setShowConfigModal(false)} />
+            <div className="fixed inset-0 bg-black/50" onClick={() => { setShowConfigModal(false); resetForm(); }} />
             <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 {editingConfig ? 'Modifier l\'intégration' : 'Nouvelle intégration'}
+                {selectedProvider && (
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    ({selectedProvider.name})
+                  </span>
+                )}
               </h2>
 
-              <form className="space-y-4">
+              {formError && (
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+                  {formError}
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSaveConfig(); }}>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nom de l'intégration
+                    Nom de l'intégration *
                   </label>
                   <input
                     type="text"
-                    defaultValue={editingConfig?.name || `${selectedProvider?.name || ''} - Production`}
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="Ex: D17 - Production"
                   />
@@ -514,7 +659,8 @@ export function IntegrationsPage() {
                     Environnement
                   </label>
                   <select
-                    defaultValue={editingConfig?.environment || 'production'}
+                    value={formData.environment}
+                    onChange={(e) => setFormData(prev => ({ ...prev, environment: e.target.value as 'sandbox' | 'production' }))}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="sandbox">Sandbox (Test)</option>
@@ -525,13 +671,18 @@ export function IntegrationsPage() {
                 {selectedProvider?.requiredCredentials.map(credential => (
                   <div key={credential}>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {credential}
+                      {credential} {!editingConfig && '*'}
                     </label>
                     <div className="relative">
                       <input
                         type={showCredentials[credential] ? 'text' : 'password'}
+                        value={formData.credentials[credential] || ''}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          credentials: { ...prev.credentials, [credential]: e.target.value }
+                        }))}
                         className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        placeholder={`Entrez votre ${credential}`}
+                        placeholder={editingConfig ? '(laisser vide pour garder)' : `Entrez votre ${credential}`}
                       />
                       <button
                         type="button"
@@ -555,28 +706,34 @@ export function IntegrationsPage() {
                   <input
                     type="checkbox"
                     id="isDefault"
-                    defaultChecked={editingConfig?.isDefault}
+                    checked={formData.isDefault}
+                    onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
                     className="rounded border-gray-300 dark:border-gray-600"
                   />
                   <label htmlFor="isDefault" className="text-sm text-gray-700 dark:text-gray-300">
                     Définir comme intégration par défaut
                   </label>
                 </div>
-              </form>
 
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  onClick={() => setShowConfigModal(false)}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                >
-                  Annuler
-                </button>
-                <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  {editingConfig ? 'Enregistrer' : 'Créer'}
-                </button>
-              </div>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setShowConfigModal(false); resetForm(); }}
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    disabled={isSaving}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isSaving && <RefreshCw className="h-4 w-4 animate-spin" />}
+                    {editingConfig ? 'Enregistrer' : 'Créer'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
