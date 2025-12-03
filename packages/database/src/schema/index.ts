@@ -17,6 +17,10 @@ export * from './notifications';
 export * from './documents';
 export * from './workflows';
 export * from './ai';
+export * from './modules';
+export * from './recipes';
+export * from './traceability';
+export * from './payroll';
 
 // Export all tables for drizzle-kit
 export {
@@ -168,3 +172,56 @@ export {
   auditSchedules,
   auditConfiguration,
 } from './audit';
+
+export {
+  moduleRegistry,
+  organizationModules,
+} from './modules';
+
+export {
+  recipeCategories,
+  recipes,
+  recipeIngredients,
+  recipeSteps,
+  recipeVersions,
+  recipeScaling,
+  allergenRegistry,
+} from './recipes';
+
+export {
+  lots,
+  lotMovements,
+  productionTraceability,
+  productionInputLots,
+  haccpControlPoints,
+  haccpRecords,
+  temperatureLogs,
+  productRecalls,
+  cleaningRecords,
+} from './traceability';
+
+export {
+  payrollPeriods,
+  salaryComponents,
+  employeeSalaries,
+  employeeSalaryComponents,
+  payslips,
+  payslipLines,
+  taxTables,
+  socialContributions,
+  overtimeRules,
+  bonuses,
+  payrollDeclarations,
+} from './payroll';
+
+export * from './integrations';
+
+export {
+  integrationConfigs,
+  integrationTransactions,
+  paymentTransactions,
+  smsTransactions,
+  shippingTransactions,
+  fiscalDeclarations,
+  integrationWebhookEvents,
+} from './integrations';

@@ -61,6 +61,28 @@ const RiskAssessmentPage = lazy(() => import('./pages/audit/RiskAssessmentPage')
 const ComplianceCopilotPage = lazy(() => import('./pages/audit/ComplianceCopilotPage').then(m => ({ default: m.ComplianceCopilotPage })));
 const CommonalityStudyPage = lazy(() => import('./pages/audit/CommonalityStudyPage').then(m => ({ default: m.CommonalityStudyPage })));
 
+// Help Center pages
+const HelpCenterPage = lazy(() => import('./pages/help/HelpCenterPage').then(m => ({ default: m.HelpCenterPage })));
+const GettingStartedPage = lazy(() => import('./pages/help/GettingStartedPage').then(m => ({ default: m.GettingStartedPage })));
+const FAQPage = lazy(() => import('./pages/help/FAQPage').then(m => ({ default: m.FAQPage })));
+const ModuleGuidesPage = lazy(() => import('./pages/help/ModuleGuidesPage').then(m => ({ default: m.ModuleGuidesPage })));
+
+// Settings pages
+const ModulesSettingsPage = lazy(() => import('./pages/settings/ModulesSettingsPage').then(m => ({ default: m.ModulesSettingsPage })));
+
+// Recipes pages (Bakery module)
+const RecipesPage = lazy(() => import('./pages/recipes/RecipesPage').then(m => ({ default: m.RecipesPage })));
+const RecipeFormPage = lazy(() => import('./pages/recipes/RecipeFormPage').then(m => ({ default: m.RecipeFormPage })));
+
+// Traceability pages (HACCP module)
+const TraceabilityPage = lazy(() => import('./pages/traceability/TraceabilityPage').then(m => ({ default: m.TraceabilityPage })));
+
+// Payroll pages
+const PayrollPage = lazy(() => import('./pages/payroll/PayrollPage').then(m => ({ default: m.PayrollPage })));
+
+// Integrations pages (Tunisian market connectors)
+const IntegrationsPage = lazy(() => import('./pages/integrations/IntegrationsPage').then(m => ({ default: m.IntegrationsPage })));
+
 // Loading fallback component
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[400px]">
@@ -147,6 +169,19 @@ function App() {
             <Route path="audit/risk" element={<Suspense fallback={<PageLoader />}><RiskAssessmentPage /></Suspense>} />
             <Route path="audit/compliance" element={<Suspense fallback={<PageLoader />}><ComplianceCopilotPage /></Suspense>} />
             <Route path="audit/commonality" element={<Suspense fallback={<PageLoader />}><CommonalityStudyPage /></Suspense>} />
+            <Route path="help" element={<Suspense fallback={<PageLoader />}><HelpCenterPage /></Suspense>} />
+            <Route path="help/getting-started" element={<Suspense fallback={<PageLoader />}><GettingStartedPage /></Suspense>} />
+            <Route path="help/faq" element={<Suspense fallback={<PageLoader />}><FAQPage /></Suspense>} />
+            <Route path="help/modules" element={<Suspense fallback={<PageLoader />}><ModuleGuidesPage /></Suspense>} />
+            <Route path="help/modules/:moduleId" element={<Suspense fallback={<PageLoader />}><ModuleGuidesPage /></Suspense>} />
+            <Route path="settings/modules" element={<Suspense fallback={<PageLoader />}><ModulesSettingsPage /></Suspense>} />
+            <Route path="recipes" element={<Suspense fallback={<PageLoader />}><RecipesPage /></Suspense>} />
+            <Route path="recipes/new" element={<Suspense fallback={<PageLoader />}><RecipeFormPage /></Suspense>} />
+            <Route path="recipes/:id" element={<Suspense fallback={<PageLoader />}><RecipeFormPage /></Suspense>} />
+            <Route path="recipes/:id/edit" element={<Suspense fallback={<PageLoader />}><RecipeFormPage /></Suspense>} />
+            <Route path="traceability" element={<Suspense fallback={<PageLoader />}><TraceabilityPage /></Suspense>} />
+            <Route path="payroll" element={<Suspense fallback={<PageLoader />}><PayrollPage /></Suspense>} />
+            <Route path="integrations" element={<Suspense fallback={<PageLoader />}><IntegrationsPage /></Suspense>} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

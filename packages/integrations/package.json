@@ -1,0 +1,24 @@
+{
+  "name": "@perfex/integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./payments": "./src/providers/payments/index.ts",
+    "./fiscal": "./src/providers/fiscal/index.ts",
+    "./sms": "./src/providers/sms/index.ts",
+    "./shipping": "./src/providers/shipping/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

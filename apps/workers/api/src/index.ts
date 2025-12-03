@@ -34,6 +34,11 @@ import documentsRoutes from './routes/documents';
 import workflowsRoutes from './routes/workflows';
 import aiRoutes from './routes/ai';
 import auditRoutes from './routes/audit';
+import modulesRoutes from './routes/modules';
+import recipesRoutes from './routes/recipes';
+import traceabilityRoutes from './routes/traceability';
+import payrollRoutes from './routes/payroll';
+import integrationsRoutes from './routes/integrations';
 import type { Env } from './types';
 import { ScheduledService } from './services/scheduled.service';
 
@@ -186,6 +191,21 @@ apiV1.route('/ai', aiRoutes);
 
 // Mount Audit routes (Smart Audit System)
 apiV1.route('/audit', auditRoutes);
+
+// Mount Modules routes (Module activation system)
+apiV1.route('/modules', modulesRoutes);
+
+// Mount Recipes routes (Recipe management for bakeries)
+apiV1.route('/recipes', recipesRoutes);
+
+// Mount Traceability routes (Lot tracking and HACCP)
+apiV1.route('/traceability', traceabilityRoutes);
+
+// Mount Payroll routes (French payroll system)
+apiV1.route('/payroll', payrollRoutes);
+
+// Mount Integrations routes (Tunisian market connectors)
+apiV1.route('/integrations', integrationsRoutes);
 
 // Mount API routes
 app.route('/api/v1', apiV1);
