@@ -25,7 +25,7 @@ export async function comparePassword(
 }
 
 /**
- * Generate an access token (15 minutes expiry)
+ * Generate an access token (24 hours expiry)
  */
 export function generateAccessToken(
   userId: string,
@@ -37,7 +37,7 @@ export function generateAccessToken(
     email,
     type: 'access',
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours
   };
 
   return jwt.sign(payload, secret);
