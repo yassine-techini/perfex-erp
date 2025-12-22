@@ -85,16 +85,16 @@ vars = { ENVIRONMENT = "production", LOG_LEVEL = "warn" }
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "perfex-db-prod"
-database_id = "b615d292-465b-4292-9914-2263fd7a66eb"
+database_id = "709639fa-b262-4d3d-aa8d-8e5120c59681"
 migrations_dir = "../../../packages/database/migrations"
 
 [[env.production.kv_namespaces]]
 binding = "SESSIONS"
-id = "85379b8924b444188374361b23898c75"
+id = "597b6e9781e1490eb2128c51b237d434"
 
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "f7fff34646004bdd80b6ce1f17fdc7aa"
+id = "7a8a7cc6db774253aa10ff3faba949b6"
 
 [env.production.ai]
 binding = "AI"
