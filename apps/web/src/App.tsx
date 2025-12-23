@@ -106,6 +106,11 @@ const DialyseVascularAccessFormPage = lazy(() => import('./pages/dialyse/Dialyse
 const DialyseSlotsPage = lazy(() => import('./pages/dialyse/DialyseSlotsPage').then(m => ({ default: m.DialyseSlotsPage })));
 const DialyseReportsPage = lazy(() => import('./pages/dialyse/DialyseReportsPage').then(m => ({ default: m.DialyseReportsPage })));
 const DialyseConsumablesPage = lazy(() => import('./pages/dialyse/DialyseConsumablesPage').then(m => ({ default: m.DialyseConsumablesPage })));
+const DialyseMaintenancePage = lazy(() => import('./pages/dialyse/DialyseMaintenancePage').then(m => ({ default: m.DialyseMaintenancePage })));
+const DialyseProtocolsPage = lazy(() => import('./pages/dialyse/DialyseProtocolsPage').then(m => ({ default: m.DialyseProtocolsPage })));
+const DialyseStaffPage = lazy(() => import('./pages/dialyse/DialyseStaffPage').then(m => ({ default: m.DialyseStaffPage })));
+const DialyseBillingPage = lazy(() => import('./pages/dialyse/DialyseBillingPage').then(m => ({ default: m.DialyseBillingPage })));
+const DialyseTransportPage = lazy(() => import('./pages/dialyse/DialyseTransportPage').then(m => ({ default: m.DialyseTransportPage })));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -231,6 +236,11 @@ function App() {
             <Route path="dialyse/slots" element={<Suspense fallback={<PageLoader />}><DialyseSlotsPage /></Suspense>} />
             <Route path="dialyse/reports" element={<Suspense fallback={<PageLoader />}><DialyseReportsPage /></Suspense>} />
             <Route path="dialyse/consumables" element={<Suspense fallback={<PageLoader />}><DialyseConsumablesPage /></Suspense>} />
+            <Route path="dialyse/maintenance" element={<Suspense fallback={<PageLoader />}><DialyseMaintenancePage /></Suspense>} />
+            <Route path="dialyse/protocols" element={<Suspense fallback={<PageLoader />}><DialyseProtocolsPage /></Suspense>} />
+            <Route path="dialyse/staff" element={<Suspense fallback={<PageLoader />}><DialyseStaffPage /></Suspense>} />
+            <Route path="dialyse/billing" element={<Suspense fallback={<PageLoader />}><DialyseBillingPage /></Suspense>} />
+            <Route path="dialyse/transport" element={<Suspense fallback={<PageLoader />}><DialyseTransportPage /></Suspense>} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

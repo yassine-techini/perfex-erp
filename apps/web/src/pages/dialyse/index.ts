@@ -19,3 +19,8 @@ export { DialyseVascularAccessFormPage } from './DialyseVascularAccessFormPage';
 export { DialyseSlotsPage } from './DialyseSlotsPage';
 export { DialyseReportsPage } from './DialyseReportsPage';
 export { DialyseConsumablesPage } from './DialyseConsumablesPage';
+export { DialyseMaintenancePage } from './DialyseMaintenancePage';
+export { DialyseProtocolsPage } from './DialyseProtocolsPage';
+export { DialyseStaffPage } from './DialyseStaffPage';
+export { DialyseBillingPage } from './DialyseBillingPage';
+export { DialyseTransportPage } from './DialyseTransportPage';
