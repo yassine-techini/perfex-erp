@@ -199,7 +199,7 @@ export function DialysePlanningPage() {
             Nouvelle Séance
           </button>
           <button
-            onClick={() => {/* TODO: Open slots config modal */}}
+            onClick={() => navigate('/dialyse/slots')}
             className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
           >
             Configurer Créneaux

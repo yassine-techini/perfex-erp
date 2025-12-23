@@ -13,3 +13,7 @@ export { DialyseAlertsPage } from './DialyseAlertsPage';
 export { DialyseAlertDetailPage } from './DialyseAlertDetailPage';
 export { DialyseSessionFormPage } from './DialyseSessionFormPage';
 export { DialyseSessionDetailPage } from './DialyseSessionDetailPage';
+export { DialysePrescriptionFormPage } from './DialysePrescriptionFormPage';
+export { DialyseLabResultFormPage } from './DialyseLabResultFormPage';
+export { DialyseVascularAccessFormPage } from './DialyseVascularAccessFormPage';
+export { DialyseSlotsPage } from './DialyseSlotsPage';

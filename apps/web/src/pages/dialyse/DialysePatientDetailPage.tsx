@@ -438,7 +438,7 @@ export function DialysePatientDetailPage() {
           <div className="p-4 border-b flex items-center justify-between">
             <h3 className="font-semibold">Séances récentes</h3>
             <button
-              onClick={() => {/* TODO: Navigate to new session */}}
+              onClick={() => navigate(`/dialyse/sessions/new?patientId=${id}`)}
               className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Nouvelle séance
@@ -482,7 +482,7 @@ export function DialysePatientDetailPage() {
           <div className="p-4 border-b flex items-center justify-between">
             <h3 className="font-semibold">Résultats de laboratoire</h3>
             <button
-              onClick={() => {/* TODO: Navigate to new lab result */}}
+              onClick={() => navigate(`/dialyse/lab-results/new?patientId=${id}`)}
               className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Nouveau résultat
@@ -536,7 +536,7 @@ export function DialysePatientDetailPage() {
           <div className="p-4 border-b flex items-center justify-between">
             <h3 className="font-semibold">Prescriptions</h3>
             <button
-              onClick={() => {/* TODO: Navigate to new prescription */}}
+              onClick={() => navigate(`/dialyse/prescriptions/new?patientId=${id}`)}
               className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Nouvelle prescription
@@ -588,7 +588,7 @@ export function DialysePatientDetailPage() {
           <div className="p-4 border-b flex items-center justify-between">
             <h3 className="font-semibold">Historique des accès vasculaires</h3>
             <button
-              onClick={() => {/* TODO: Navigate to new access */}}
+              onClick={() => navigate(`/dialyse/vascular-accesses/new?patientId=${id}`)}
               className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Nouvel accès
