@@ -103,7 +103,22 @@ export function DialyseAlertsPage() {
       setResolutionNotes('');
     },
     onError: (error) => {
-      alert(`Erreur: ${getErrorMessage(error)}`);
+      window.alert(`Erreur: ${getErrorMessage(error)}`);
+    },
+  });
+
+  // Generate automated alerts mutation
+  const generateAlertsMutation = useMutation({
+    mutationFn: async () => {
+      await api.post('/dialyse/alerts/generate');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dialyse-alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['dialyse-alerts-stats'] });
+      window.alert('Alertes automatiques générées avec succès');
+    },
+    onError: (error) => {
+      window.alert(`Erreur: ${getErrorMessage(error)}`);
     },
   });
 
@@ -199,10 +214,11 @@ export function DialyseAlertsPage() {
           </p>
         </div>
         <button
-          onClick={() => {/* TODO: Trigger automated alert generation */}}
-          className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+          onClick={() => generateAlertsMutation.mutate()}
+          disabled={generateAlertsMutation.isPending}
+          className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
         >
-          Générer les alertes automatiques
+          {generateAlertsMutation.isPending ? 'Génération en cours...' : 'Générer les alertes automatiques'}
         </button>
       </div>
 
