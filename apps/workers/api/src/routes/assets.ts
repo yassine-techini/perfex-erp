@@ -24,13 +24,13 @@ app.use('*', authMiddleware);
 // ============================================
 
 app.get('/categories', requirePermissions('assets:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categories = await assetsService.listCategories(organizationId);
   return c.json({ success: true, data: categories });
 });
 
 app.post('/categories', requirePermissions('assets:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -51,7 +51,7 @@ app.post('/categories', requirePermissions('assets:create'), async (c) => {
 // ============================================
 
 app.get('/assets', requirePermissions('assets:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categoryId = c.req.query('categoryId');
   const status = c.req.query('status');
   const search = c.req.query('search');
@@ -61,13 +61,13 @@ app.get('/assets', requirePermissions('assets:read'), async (c) => {
 });
 
 app.get('/assets/stats', requirePermissions('assets:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await assetsService.getStats(organizationId);
   return c.json({ success: true, data: stats });
 });
 
 app.get('/assets/:id', requirePermissions('assets:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const assetId = c.req.param('id');
 
   const asset = await assetsService.getAssetById(organizationId, assetId);
@@ -79,7 +79,7 @@ app.get('/assets/:id', requirePermissions('assets:read'), async (c) => {
 });
 
 app.post('/assets', requirePermissions('assets:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -96,7 +96,7 @@ app.post('/assets', requirePermissions('assets:create'), async (c) => {
 });
 
 app.put('/assets/:id', requirePermissions('assets:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const assetId = c.req.param('id');
   const body = await c.req.json();
 
@@ -120,7 +120,7 @@ app.put('/assets/:id', requirePermissions('assets:update'), async (c) => {
 });
 
 app.delete('/assets/:id', requirePermissions('assets:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const assetId = c.req.param('id');
 
   try {
@@ -139,7 +139,7 @@ app.delete('/assets/:id', requirePermissions('assets:delete'), async (c) => {
 // ============================================
 
 app.get('/maintenance', requirePermissions('assets:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const assetId = c.req.query('assetId');
   const status = c.req.query('status');
 
@@ -148,7 +148,7 @@ app.get('/maintenance', requirePermissions('assets:read'), async (c) => {
 });
 
 app.post('/maintenance', requirePermissions('assets:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 

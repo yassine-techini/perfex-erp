@@ -29,7 +29,7 @@ app.use('*', authMiddleware);
  */
 app.get('/items', requirePermissions('inventory:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const category = c.req.query('category');
     const active = c.req.query('active');
     const search = c.req.query('search');
@@ -62,7 +62,7 @@ app.get('/items', requirePermissions('inventory:read'), async (c) => {
  */
 app.get('/items/stats', requirePermissions('inventory:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await inventoryService.getStats(organizationId);
 
     return c.json({
@@ -87,7 +87,7 @@ app.get('/items/stats', requirePermissions('inventory:read'), async (c) => {
  */
 app.get('/items/:id', requirePermissions('inventory:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const itemId = c.req.param('id');
 
     const item = await inventoryService.getItemById(organizationId, itemId);
@@ -127,7 +127,7 @@ app.get('/items/:id', requirePermissions('inventory:read'), async (c) => {
  */
 app.post('/items', requirePermissions('inventory:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -174,7 +174,7 @@ app.post('/items', requirePermissions('inventory:create'), async (c) => {
  */
 app.put('/items/:id', requirePermissions('inventory:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const itemId = c.req.param('id');
     const body = await c.req.json();
 
@@ -230,7 +230,7 @@ app.put('/items/:id', requirePermissions('inventory:update'), async (c) => {
  */
 app.delete('/items/:id', requirePermissions('inventory:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const itemId = c.req.param('id');
 
     await inventoryService.deleteItem(organizationId, itemId);
@@ -273,7 +273,7 @@ app.delete('/items/:id', requirePermissions('inventory:delete'), async (c) => {
  */
 app.get('/warehouses', requirePermissions('inventory:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const active = c.req.query('active');
 
     const warehouses = await inventoryService.listWarehouses(organizationId, {
@@ -302,7 +302,7 @@ app.get('/warehouses', requirePermissions('inventory:read'), async (c) => {
  */
 app.get('/warehouses/:id', requirePermissions('inventory:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const warehouseId = c.req.param('id');
 
     const warehouse = await inventoryService.getWarehouseById(organizationId, warehouseId);
@@ -342,7 +342,7 @@ app.get('/warehouses/:id', requirePermissions('inventory:read'), async (c) => {
  */
 app.post('/warehouses', requirePermissions('inventory:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -389,7 +389,7 @@ app.post('/warehouses', requirePermissions('inventory:create'), async (c) => {
  */
 app.put('/warehouses/:id', requirePermissions('inventory:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const warehouseId = c.req.param('id');
     const body = await c.req.json();
 
@@ -445,7 +445,7 @@ app.put('/warehouses/:id', requirePermissions('inventory:update'), async (c) => 
  */
 app.delete('/warehouses/:id', requirePermissions('inventory:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const warehouseId = c.req.param('id');
 
     await inventoryService.deleteWarehouse(organizationId, warehouseId);

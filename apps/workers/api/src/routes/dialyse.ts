@@ -73,7 +73,7 @@ dialyse.get(
   zValidator('query', listPatientsQuerySchema),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const query = c.req.valid('query');
 
       const result = await patientService.list(organizationId, query);
@@ -109,7 +109,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
 
       const stats = await patientService.getStats(organizationId);
 
@@ -139,7 +139,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
 
       const patients = await patientService.getIsolationPatients(organizationId);
 
@@ -169,7 +169,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('id');
       const full = c.req.query('full') === 'true';
 
@@ -207,7 +207,7 @@ dialyse.post(
   requirePermission('dialyse:patients:create'),
   zValidator('json', createPatientSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -236,7 +236,7 @@ dialyse.put(
   requirePermission('dialyse:patients:update'),
   zValidator('json', updatePatientSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const patientId = c.req.param('id');
     const data = c.req.valid('json');
@@ -269,7 +269,7 @@ dialyse.put(
   requirePermission('dialyse:patients:update'),
   zValidator('json', updateSerologySchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const patientId = c.req.param('id');
     const data = c.req.valid('json');
@@ -301,7 +301,7 @@ dialyse.delete(
   '/patients/:id',
   requirePermission('dialyse:patients:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const patientId = c.req.param('id');
 
     try {
@@ -336,7 +336,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const accesses = await vascularAccessService.listByPatient(organizationId, patientId);
@@ -367,7 +367,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const access = await vascularAccessService.getActiveByPatient(organizationId, patientId);
@@ -402,7 +402,7 @@ dialyse.post(
   requirePermission('dialyse:patients:update'),
   zValidator('json', createVascularAccessSchema.omit({ patientId: true })),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const patientId = c.req.param('patientId');
     const data = c.req.valid('json');
@@ -435,7 +435,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const accessId = c.req.param('id');
 
       const access = await vascularAccessService.getById(organizationId, accessId);
@@ -470,7 +470,7 @@ dialyse.put(
   requirePermission('dialyse:patients:update'),
   zValidator('json', updateVascularAccessSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const accessId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -501,7 +501,7 @@ dialyse.delete(
   '/accesses/:id',
   requirePermission('dialyse:patients:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const accessId = c.req.param('id');
 
     try {
@@ -536,7 +536,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const status = c.req.query('status');
       const patientId = c.req.query('patientId');
       const { limit, offset } = validatePagination(c.req.query('limit'), c.req.query('offset'));
@@ -570,7 +570,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const prescriptionId = c.req.param('id');
       const withPatient = c.req.query('withPatient') === 'true';
 
@@ -605,7 +605,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const prescriptions = await prescriptionService.listByPatient(organizationId, patientId);
@@ -633,7 +633,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const prescription = await prescriptionService.getActiveByPatient(organizationId, patientId);
@@ -665,7 +665,7 @@ dialyse.post(
   requirePermission('dialyse:prescriptions:create'),
   zValidator('json', createPrescriptionSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -687,7 +687,7 @@ dialyse.put(
   requirePermission('dialyse:prescriptions:update'),
   zValidator('json', updatePrescriptionSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const prescriptionId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -711,7 +711,7 @@ dialyse.post(
   '/prescriptions/:id/renew',
   requirePermission('dialyse:prescriptions:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const prescriptionId = c.req.param('id');
 
@@ -732,7 +732,7 @@ dialyse.post(
   '/prescriptions/:id/cancel',
   requirePermission('dialyse:prescriptions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const prescriptionId = c.req.param('id');
 
     try {
@@ -757,7 +757,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const status = c.req.query('status');
       const isolationOnly = c.req.query('isolationOnly') === 'true' ? true : c.req.query('isolationOnly') === 'false' ? false : undefined;
       const { limit, offset } = validatePagination(c.req.query('limit'), c.req.query('offset'), { defaultLimit: 50 });
@@ -791,7 +791,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await machineService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -816,7 +816,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const requiresIsolation = c.req.query('requiresIsolation') === 'true';
 
       const machines = await machineService.getAvailable(organizationId, requiresIsolation);
@@ -844,7 +844,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const machineId = c.req.param('id');
       const withMaintenance = c.req.query('withMaintenance') === 'true';
 
@@ -879,7 +879,7 @@ dialyse.post(
   requirePermission('dialyse:machines:create'),
   zValidator('json', createMachineSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -901,7 +901,7 @@ dialyse.put(
   requirePermission('dialyse:machines:update'),
   zValidator('json', updateMachineSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const machineId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -925,7 +925,7 @@ dialyse.delete(
   '/machines/:id',
   requirePermission('dialyse:machines:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const machineId = c.req.param('id');
 
     try {
@@ -950,7 +950,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
 
       const stats = await machineService.getMaintenanceStats(organizationId);
 
@@ -977,7 +977,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const { status, type, priority, limit: limitStr, offset: offsetStr } = c.req.query();
       const { limit, offset } = validatePagination(limitStr, offsetStr);
 
@@ -1020,7 +1020,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const machineId = c.req.param('machineId');
 
       const records = await machineService.listMaintenanceByMachine(organizationId, machineId);
@@ -1048,7 +1048,7 @@ dialyse.post(
   requirePermission('dialyse:machines:update'),
   zValidator('json', createMaintenanceRecordSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -1070,7 +1070,7 @@ dialyse.put(
   requirePermission('dialyse:machines:update'),
   zValidator('json', updateMaintenanceRecordSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const maintenanceId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -1091,7 +1091,7 @@ dialyse.post(
   '/maintenance/:id/start',
   requirePermission('dialyse:machines:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const maintenanceId = c.req.param('id');
 
     try {
@@ -1116,7 +1116,7 @@ dialyse.delete(
   '/maintenance/:id',
   requirePermission('dialyse:machines:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const maintenanceId = c.req.param('id');
 
     try {
@@ -1141,7 +1141,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const activeOnly = c.req.query('activeOnly') !== 'false';
 
       const slots = await sessionService.listSlots(organizationId, activeOnly);
@@ -1169,7 +1169,7 @@ dialyse.post(
   requirePermission('dialyse:sessions:create'),
   zValidator('json', createSessionSlotSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const data = c.req.valid('json');
 
     try {
@@ -1190,7 +1190,7 @@ dialyse.put(
   requirePermission('dialyse:sessions:update'),
   zValidator('json', updateSessionSlotSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const slotId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -1217,7 +1217,7 @@ dialyse.get(
   zValidator('query', listSessionsQuerySchema),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const query = c.req.valid('query');
 
       const startDate = query.dateFrom ? new Date(query.dateFrom) : new Date();
@@ -1253,7 +1253,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const sessions = await sessionService.getTodaySessions(organizationId);
       return c.json({ success: true, data: sessions });
     } catch (error) {
@@ -1278,7 +1278,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const dateFrom = c.req.query('dateFrom');
       const dateTo = c.req.query('dateTo');
 
@@ -1311,7 +1311,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const sessionId = c.req.param('id');
       const withDetails = c.req.query('withDetails') === 'true';
 
@@ -1346,7 +1346,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const sessions = await sessionService.listByPatient(organizationId, patientId);
@@ -1374,7 +1374,7 @@ dialyse.post(
   requirePermission('dialyse:sessions:create'),
   zValidator('json', createSessionSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -1396,7 +1396,7 @@ dialyse.post(
   requirePermission('dialyse:sessions:create'),
   zValidator('json', createSessionSchema.extend({ weeks: z.number().int().min(1).max(12).default(4) })),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const { weeks, ...data } = c.req.valid('json');
 
@@ -1418,7 +1418,7 @@ dialyse.put(
   requirePermission('dialyse:sessions:update'),
   zValidator('json', updateSessionSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const sessionId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -1439,7 +1439,7 @@ dialyse.post(
   '/sessions/:id/check-in',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const sessionId = c.req.param('id');
 
     try {
@@ -1459,7 +1459,7 @@ dialyse.post(
   '/sessions/:id/start',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const sessionId = c.req.param('id');
     const machineId = c.req.query('machineId');
 
@@ -1480,7 +1480,7 @@ dialyse.post(
   '/sessions/:id/complete',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const sessionId = c.req.param('id');
 
     try {
@@ -1501,7 +1501,7 @@ dialyse.post(
   requirePermission('dialyse:sessions:update'),
   zValidator('json', z.object({ reason: z.string().min(1) })),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const sessionId = c.req.param('id');
     const { reason } = c.req.valid('json');
@@ -1669,7 +1669,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
       const startDate = c.req.query('startDate');
       const endDate = c.req.query('endDate');
@@ -1709,7 +1709,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const result = await labService.getLatestByPatient(organizationId, patientId);
@@ -1741,7 +1741,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
       const marker = c.req.query('marker') || 'hemoglobin';
       const months = parseMonths(c.req.query('months'));
@@ -1771,7 +1771,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const labId = c.req.param('id');
 
       const result = await labService.getById(organizationId, labId);
@@ -1803,7 +1803,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const dateFrom = c.req.query('dateFrom');
       const dateTo = c.req.query('dateTo');
 
@@ -1836,7 +1836,7 @@ dialyse.get(
   requirePermission('dialyse:labs:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const results = await labService.getPatientsWithOutOfRangeValues(organizationId);
       return c.json({ success: true, data: results });
     } catch (error) {
@@ -1861,7 +1861,7 @@ dialyse.post(
   requirePermission('dialyse:labs:create'),
   zValidator('json', createLabResultSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = c.req.valid('json');
 
@@ -1883,7 +1883,7 @@ dialyse.put(
   requirePermission('dialyse:labs:update'),
   zValidator('json', updateLabResultSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const labId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -1904,7 +1904,7 @@ dialyse.post(
   '/labs/:id/review',
   requirePermission('dialyse:labs:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const labId = c.req.param('id');
 
@@ -1925,7 +1925,7 @@ dialyse.delete(
   '/labs/:id',
   requirePermission('dialyse:labs:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const labId = c.req.param('id');
 
     try {
@@ -1951,7 +1951,7 @@ dialyse.get(
   zValidator('query', listAlertsQuerySchema),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const query = c.req.valid('query');
 
       const result = await alertService.list(organizationId, query);
@@ -1983,7 +1983,7 @@ dialyse.get(
   requirePermission('dialyse:alerts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const alerts = await alertService.getCriticalAlerts(organizationId);
       return c.json({ success: true, data: alerts });
     } catch (error) {
@@ -2008,7 +2008,7 @@ dialyse.get(
   requirePermission('dialyse:alerts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await alertService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2033,7 +2033,7 @@ dialyse.get(
   requirePermission('dialyse:alerts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const patientId = c.req.param('patientId');
 
       const alerts = await alertService.getActiveByPatient(organizationId, patientId);
@@ -2061,7 +2061,7 @@ dialyse.get(
   requirePermission('dialyse:alerts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const alertId = c.req.param('id');
       const withPatient = c.req.query('withPatient') === 'true';
 
@@ -2096,7 +2096,7 @@ dialyse.post(
   requirePermission('dialyse:alerts:create'),
   zValidator('json', createClinicalAlertSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const data = c.req.valid('json');
 
     try {
@@ -2117,7 +2117,7 @@ dialyse.put(
   requirePermission('dialyse:alerts:update'),
   zValidator('json', updateClinicalAlertSchema),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const alertId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -2138,7 +2138,7 @@ dialyse.post(
   '/alerts/:id/acknowledge',
   requirePermission('dialyse:alerts:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const alertId = c.req.param('id');
 
@@ -2160,7 +2160,7 @@ dialyse.post(
   requirePermission('dialyse:alerts:update'),
   zValidator('json', z.object({ notes: z.string().optional() })),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const alertId = c.req.param('id');
     const { notes } = c.req.valid('json');
@@ -2182,7 +2182,7 @@ dialyse.post(
   '/alerts/:id/dismiss',
   requirePermission('dialyse:alerts:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const alertId = c.req.param('id');
 
     try {
@@ -2202,7 +2202,7 @@ dialyse.post(
   '/alerts/generate',
   requirePermission('dialyse:alerts:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
 
     try {
       const result = await alertService.runAutomatedAlertGeneration(organizationId);
@@ -2226,7 +2226,7 @@ dialyse.get(
   requirePermission('dialyse:patients:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
 
       const [patientStats, machineStats, sessionStats, alertStats, todaySessions, criticalAlerts] = await Promise.all([
         patientService.getStats(organizationId),
@@ -2274,7 +2274,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const status = c.req.query('status');
       const type = c.req.query('type');
       const { limit, offset } = validatePagination(c.req.query('limit'), c.req.query('offset'));
@@ -2302,7 +2302,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await protocolService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2326,7 +2326,7 @@ dialyse.get(
   requirePermission('dialyse:prescriptions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const id = c.req.param('id');
       const protocol = await protocolService.getById(organizationId, id);
       if (!protocol) return c.json({ success: false, error: 'Protocol not found' }, 404);
@@ -2351,7 +2351,7 @@ dialyse.post(
   '/protocols',
   requirePermission('dialyse:prescriptions:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = await c.req.json();
     try {
@@ -2370,7 +2370,7 @@ dialyse.put(
   '/protocols/:id',
   requirePermission('dialyse:prescriptions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const data = await c.req.json();
     try {
@@ -2389,7 +2389,7 @@ dialyse.post(
   '/protocols/:id/duplicate',
   requirePermission('dialyse:prescriptions:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const id = c.req.param('id');
     try {
@@ -2408,7 +2408,7 @@ dialyse.delete(
   '/protocols/:id',
   requirePermission('dialyse:prescriptions:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     try {
       await protocolService.delete(organizationId, id);
@@ -2431,7 +2431,7 @@ dialyse.get(
   requirePermission('dialyse:staff:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const role = c.req.query('role');
       const status = c.req.query('status');
       const { limit, offset } = validatePagination(c.req.query('limit'), c.req.query('offset'));
@@ -2459,7 +2459,7 @@ dialyse.get(
   requirePermission('dialyse:staff:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await staffService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2483,7 +2483,7 @@ dialyse.get(
   requirePermission('dialyse:staff:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const id = c.req.param('id');
       const staff = await staffService.getById(organizationId, id);
       if (!staff) return c.json({ success: false, error: 'Staff not found' }, 404);
@@ -2508,7 +2508,7 @@ dialyse.post(
   '/staff',
   requirePermission('dialyse:staff:write'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = await c.req.json();
     try {
@@ -2527,7 +2527,7 @@ dialyse.put(
   '/staff/:id',
   requirePermission('dialyse:staff:write'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const data = await c.req.json();
     try {
@@ -2546,7 +2546,7 @@ dialyse.put(
   '/staff/:id/schedule',
   requirePermission('dialyse:staff:write'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const { schedule } = await c.req.json();
     try {
@@ -2565,7 +2565,7 @@ dialyse.delete(
   '/staff/:id',
   requirePermission('dialyse:staff:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     try {
       await staffService.delete(organizationId, id);
@@ -2588,7 +2588,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const status = c.req.query('status');
       const patientId = c.req.query('patientId');
       const startDate = c.req.query('startDate');
@@ -2618,7 +2618,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await billingService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2642,7 +2642,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const id = c.req.param('id');
       const billing = await billingService.getById(organizationId, id);
       if (!billing) return c.json({ success: false, error: 'Billing not found' }, 404);
@@ -2667,7 +2667,7 @@ dialyse.post(
   '/billing',
   requirePermission('dialyse:sessions:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = await c.req.json();
     try {
@@ -2686,7 +2686,7 @@ dialyse.put(
   '/billing/:id',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const data = await c.req.json();
     try {
@@ -2705,7 +2705,7 @@ dialyse.post(
   '/billing/:id/pay',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const { paidAmount, paidDate } = await c.req.json();
     try {
@@ -2724,7 +2724,7 @@ dialyse.delete(
   '/billing/:id',
   requirePermission('dialyse:sessions:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     try {
       await billingService.delete(organizationId, id);
@@ -2747,7 +2747,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const status = c.req.query('status');
       const date = c.req.query('date');
       const patientId = c.req.query('patientId');
@@ -2777,7 +2777,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await transportService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2801,7 +2801,7 @@ dialyse.get(
   requirePermission('dialyse:sessions:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const id = c.req.param('id');
       const transport = await transportService.getById(organizationId, id);
       if (!transport) return c.json({ success: false, error: 'Transport not found' }, 404);
@@ -2826,7 +2826,7 @@ dialyse.post(
   '/transport',
   requirePermission('dialyse:sessions:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = await c.req.json();
     try {
@@ -2845,7 +2845,7 @@ dialyse.put(
   '/transport/:id',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const data = await c.req.json();
     try {
@@ -2864,7 +2864,7 @@ dialyse.patch(
   '/transport/:id/status',
   requirePermission('dialyse:sessions:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const { status, actualTime } = await c.req.json();
     try {
@@ -2883,7 +2883,7 @@ dialyse.delete(
   '/transport/:id',
   requirePermission('dialyse:sessions:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     try {
       await transportService.delete(organizationId, id);
@@ -2906,7 +2906,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const category = c.req.query('category');
       const status = c.req.query('status');
       const lowStock = c.req.query('lowStock') === 'true';
@@ -2935,7 +2935,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const stats = await consumablesService.getStats(organizationId);
       return c.json({ success: true, data: stats });
     } catch (error) {
@@ -2959,7 +2959,7 @@ dialyse.get(
   requirePermission('dialyse:machines:read'),
   async (c) => {
     try {
-      const organizationId = c.get('realOrganizationId');
+      const organizationId = c.get('realOrganizationId')!;
       const id = c.req.param('id');
       const consumable = await consumablesService.getById(organizationId, id);
       if (!consumable) return c.json({ success: false, error: 'Consumable not found' }, 404);
@@ -2984,7 +2984,7 @@ dialyse.post(
   '/consumables',
   requirePermission('dialyse:machines:create'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const data = await c.req.json();
     try {
@@ -3003,7 +3003,7 @@ dialyse.put(
   '/consumables/:id',
   requirePermission('dialyse:machines:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     const data = await c.req.json();
     try {
@@ -3022,7 +3022,7 @@ dialyse.post(
   '/consumables/:id/stock',
   requirePermission('dialyse:machines:update'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const userId = c.get('userId');
     const id = c.req.param('id');
     const movement = await c.req.json();
@@ -3042,7 +3042,7 @@ dialyse.delete(
   '/consumables/:id',
   requirePermission('dialyse:machines:delete'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const id = c.req.param('id');
     try {
       await consumablesService.delete(organizationId, id);
@@ -3064,7 +3064,7 @@ dialyse.get(
   '/reports',
   requirePermission('dialyse:patients:read'),
   async (c) => {
-    const organizationId = c.get('realOrganizationId');
+    const organizationId = c.get('realOrganizationId')!;
     const period = c.req.query('period') || 'month';
     try {
       const report = await reportsService.getReport(organizationId, period);

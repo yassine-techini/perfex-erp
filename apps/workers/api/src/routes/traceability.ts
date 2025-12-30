@@ -22,7 +22,7 @@ app.use('*', authMiddleware);
  * List all lots
  */
 app.get('/lots', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const type = c.req.query('type');
   const status = c.req.query('status');
   const search = c.req.query('search');
@@ -44,7 +44,7 @@ app.get('/lots', requirePermissions('traceability:read'), async (c) => {
  * Get lots expiring soon
  */
 app.get('/lots/expiring', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const days = parseInt(c.req.query('days') || '7');
 
   const lots = await traceabilityService.getExpiringLots(organizationId, days);
@@ -60,7 +60,7 @@ app.get('/lots/expiring', requirePermissions('traceability:read'), async (c) => 
  * Get lot statistics
  */
 app.get('/lots/stats', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await traceabilityService.getLotStats(organizationId);
 
   return c.json({
@@ -74,7 +74,7 @@ app.get('/lots/stats', requirePermissions('traceability:read'), async (c) => {
  * Get lot by ID with movements
  */
 app.get('/lots/:id', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const lotId = c.req.param('id');
 
   const lot = await traceabilityService.getLotById(organizationId, lotId);
@@ -97,7 +97,7 @@ app.get('/lots/:id', requirePermissions('traceability:read'), async (c) => {
  * Create a new lot
  */
 app.post('/lots', requirePermissions('traceability:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const body = await c.req.json();
 
   const lot = await traceabilityService.createLot({
@@ -133,7 +133,7 @@ app.post('/lots', requirePermissions('traceability:create'), async (c) => {
  * Update a lot
  */
 app.put('/lots/:id', requirePermissions('traceability:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const lotId = c.req.param('id');
   const body = await c.req.json();
 
@@ -191,7 +191,7 @@ app.post('/lots/:id/movements', requirePermissions('traceability:update'), async
  * Trace production batch (inputs and outputs)
  */
 app.get('/lots/:id/trace', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const lotId = c.req.param('id');
 
   const trace = await traceabilityService.traceProductionBatch(organizationId, lotId);
@@ -211,7 +211,7 @@ app.get('/lots/:id/trace', requirePermissions('traceability:read'), async (c) =>
  * List all HACCP control points
  */
 app.get('/haccp/control-points', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const controlPoints = await traceabilityService.listControlPoints(organizationId);
 
   return c.json({
@@ -225,7 +225,7 @@ app.get('/haccp/control-points', requirePermissions('traceability:read'), async 
  * Get control point by ID
  */
 app.get('/haccp/control-points/:id', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const cpId = c.req.param('id');
 
   const controlPoint = await traceabilityService.getControlPointById(organizationId, cpId);
@@ -248,7 +248,7 @@ app.get('/haccp/control-points/:id', requirePermissions('traceability:read'), as
  * Create a new control point
  */
 app.post('/haccp/control-points', requirePermissions('traceability:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const body = await c.req.json();
 
   const controlPoint = await traceabilityService.createControlPoint({
@@ -282,7 +282,7 @@ app.post('/haccp/control-points', requirePermissions('traceability:create'), asy
  * Update a control point
  */
 app.put('/haccp/control-points/:id', requirePermissions('traceability:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const cpId = c.req.param('id');
   const body = await c.req.json();
 
@@ -306,7 +306,7 @@ app.put('/haccp/control-points/:id', requirePermissions('traceability:update'), 
  * Delete a control point
  */
 app.delete('/haccp/control-points/:id', requirePermissions('traceability:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const cpId = c.req.param('id');
 
   await traceabilityService.deleteControlPoint(cpId, organizationId);
@@ -375,7 +375,7 @@ app.post('/haccp/records', requirePermissions('traceability:create'), async (c) 
  * Get recent deviations
  */
 app.get('/haccp/deviations', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const days = parseInt(c.req.query('days') || '30');
 
   const deviations = await traceabilityService.getDeviations(organizationId, days);
@@ -391,7 +391,7 @@ app.get('/haccp/deviations', requirePermissions('traceability:read'), async (c) 
  * Get HACCP statistics
  */
 app.get('/haccp/stats', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await traceabilityService.getHaccpStats(organizationId);
 
   return c.json({
@@ -409,7 +409,7 @@ app.get('/haccp/stats', requirePermissions('traceability:read'), async (c) => {
  * List temperature logs
  */
 app.get('/temperature', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const equipmentId = c.req.query('equipmentId');
   const startDate = c.req.query('startDate');
   const endDate = c.req.query('endDate');
@@ -431,7 +431,7 @@ app.get('/temperature', requirePermissions('traceability:read'), async (c) => {
  * Create temperature log
  */
 app.post('/temperature', requirePermissions('traceability:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -466,7 +466,7 @@ app.post('/temperature', requirePermissions('traceability:create'), async (c) =>
  * Get temperature alerts (out of range)
  */
 app.get('/temperature/alerts', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const alerts = await traceabilityService.getTemperatureAlerts(organizationId);
 
   return c.json({
@@ -484,7 +484,7 @@ app.get('/temperature/alerts', requirePermissions('traceability:read'), async (c
  * List product recalls
  */
 app.get('/recalls', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recalls = await traceabilityService.listRecalls(organizationId);
 
   return c.json({
@@ -498,7 +498,7 @@ app.get('/recalls', requirePermissions('traceability:read'), async (c) => {
  * Get recall by ID
  */
 app.get('/recalls/:id', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recallId = c.req.param('id');
 
   const recall = await traceabilityService.getRecallById(organizationId, recallId);
@@ -521,7 +521,7 @@ app.get('/recalls/:id', requirePermissions('traceability:read'), async (c) => {
  * Create a product recall
  */
 app.post('/recalls', requirePermissions('traceability:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -551,7 +551,7 @@ app.post('/recalls', requirePermissions('traceability:create'), async (c) => {
  * Update a recall
  */
 app.put('/recalls/:id', requirePermissions('traceability:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recallId = c.req.param('id');
   const body = await c.req.json();
 
@@ -582,7 +582,7 @@ app.put('/recalls/:id', requirePermissions('traceability:update'), async (c) => 
  * List cleaning records
  */
 app.get('/cleaning', requirePermissions('traceability:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const area = c.req.query('area');
   const status = c.req.query('status');
 
@@ -602,7 +602,7 @@ app.get('/cleaning', requirePermissions('traceability:read'), async (c) => {
  * Create cleaning record
  */
 app.post('/cleaning', requirePermissions('traceability:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -630,7 +630,7 @@ app.post('/cleaning', requirePermissions('traceability:create'), async (c) => {
  * Update cleaning record
  */
 app.put('/cleaning/:id', requirePermissions('traceability:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recordId = c.req.param('id');
   const userId = c.get('userId');
   const body = await c.req.json();

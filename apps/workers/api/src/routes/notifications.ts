@@ -22,7 +22,7 @@ app.use('*', authMiddleware);
 // ============================================
 
 app.get('/', async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const unreadOnly = c.req.query('unreadOnly') === 'true';
 
@@ -31,7 +31,7 @@ app.get('/', async (c) => {
 });
 
 app.get('/unread-count', async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
 
   const count = await notificationsService.getUnreadCount(organizationId, userId);
@@ -39,7 +39,7 @@ app.get('/unread-count', async (c) => {
 });
 
 app.post('/mark-read', async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -56,7 +56,7 @@ app.post('/mark-read', async (c) => {
 });
 
 app.post('/mark-all-read', async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
 
   await notificationsService.markAllAsRead(organizationId, userId);
@@ -68,7 +68,7 @@ app.post('/mark-all-read', async (c) => {
 // ============================================
 
 app.get('/audit-logs', requirePermissions('admin'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const entityType = c.req.query('entityType');
   const entityId = c.req.query('entityId');
   const userId = c.req.query('userId');
@@ -82,7 +82,7 @@ app.get('/audit-logs', requirePermissions('admin'), async (c) => {
 // ============================================
 
 app.get('/settings', requirePermissions('admin'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const category = c.req.query('category');
 
   const settings = await notificationsService.listSettings(organizationId, category);
@@ -90,7 +90,7 @@ app.get('/settings', requirePermissions('admin'), async (c) => {
 });
 
 app.get('/settings/:category/:key', requirePermissions('admin'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const category = c.req.param('category');
   const key = c.req.param('key');
 
@@ -103,7 +103,7 @@ app.get('/settings/:category/:key', requirePermissions('admin'), async (c) => {
 });
 
 app.post('/settings', requirePermissions('admin'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -120,7 +120,7 @@ app.post('/settings', requirePermissions('admin'), async (c) => {
 });
 
 app.put('/settings/:category/:key', requirePermissions('admin'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const category = c.req.param('category');
   const key = c.req.param('key');

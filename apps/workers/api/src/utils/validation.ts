@@ -116,8 +116,20 @@ export function validateOrganizationId(organizationId: string | undefined | null
   if (!organizationId) {
     throw new Error('Organization ID is required');
   }
-  if (!isValidUUID(organizationId)) {
+  // Accept both UUID format and custom IDs (org-xxx, company-xxx, etc.)
+  if (!isValidUUID(organizationId) && !organizationId.match(/^[a-z]+-[a-z0-9-]+$/i)) {
     throw new Error('Invalid organization ID format');
+  }
+  return organizationId;
+}
+
+/**
+ * Require organization ID - returns the ID or throws
+ * Use this in routes to ensure organizationId is present
+ */
+export function requireOrganizationId(organizationId: string | undefined | null): string {
+  if (!organizationId) {
+    throw new Error('Organization ID is required');
   }
   return organizationId;
 }

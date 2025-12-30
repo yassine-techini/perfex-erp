@@ -27,7 +27,7 @@ const app = new Hono();
 
 app.get('/categories', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const categories = await documentsService.listCategories(organizationId);
     return c.json({ success: true, data: categories });
   } catch (error) {
@@ -44,7 +44,7 @@ app.get('/categories', requirePermissions('documents:read'), async (c) => {
 
 app.post('/categories', requirePermissions('documents:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -76,7 +76,7 @@ app.post('/categories', requirePermissions('documents:create'), async (c) => {
 
 app.get('/', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { categoryId, search, relatedEntityType, relatedEntityId } = c.req.query();
 
     const documents = await documentsService.listDocuments(organizationId, {
@@ -101,7 +101,7 @@ app.get('/', requirePermissions('documents:read'), async (c) => {
 
 app.post('/', requirePermissions('documents:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -129,7 +129,7 @@ app.post('/', requirePermissions('documents:create'), async (c) => {
 
 app.get('/:id', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { id } = c.req.param();
 
     const document = await documentsService.getDocumentById(organizationId, id);
@@ -151,7 +151,7 @@ app.get('/:id', requirePermissions('documents:read'), async (c) => {
 });
 
 app.put('/:id', requirePermissions('documents:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
   const body = await c.req.json();
 
@@ -172,7 +172,7 @@ app.put('/:id', requirePermissions('documents:update'), async (c) => {
 });
 
 app.delete('/:id', requirePermissions('documents:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -189,7 +189,7 @@ app.delete('/:id', requirePermissions('documents:delete'), async (c) => {
 
 app.get('/email-templates', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { category } = c.req.query();
 
     const templates = await documentsService.listEmailTemplates(organizationId, category);
@@ -208,7 +208,7 @@ app.get('/email-templates', requirePermissions('documents:read'), async (c) => {
 
 app.post('/email-templates', requirePermissions('documents:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -236,7 +236,7 @@ app.post('/email-templates', requirePermissions('documents:create'), async (c) =
 
 app.get('/email-templates/:id', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { id } = c.req.param();
 
     const template = await documentsService.getEmailTemplateById(organizationId, id);
@@ -263,7 +263,7 @@ app.get('/email-templates/:id', requirePermissions('documents:read'), async (c) 
 
 app.post('/email-queue', requirePermissions('documents:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const validation = queueEmailSchema.safeParse(body);
@@ -294,7 +294,7 @@ app.post('/email-queue', requirePermissions('documents:create'), async (c) => {
 
 app.get('/reports', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { category } = c.req.query();
 
     const reports = await documentsService.listReports(organizationId, category);
@@ -313,7 +313,7 @@ app.get('/reports', requirePermissions('documents:read'), async (c) => {
 
 app.post('/reports', requirePermissions('documents:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -341,7 +341,7 @@ app.post('/reports', requirePermissions('documents:create'), async (c) => {
 
 app.get('/reports/:id', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const { id } = c.req.param();
 
     const report = await documentsService.getReportById(organizationId, id);
@@ -368,7 +368,7 @@ app.get('/reports/:id', requirePermissions('documents:read'), async (c) => {
 
 app.get('/stats', requirePermissions('documents:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await documentsService.getStats(organizationId);
     return c.json({ success: true, data: stats });
   } catch (error) {

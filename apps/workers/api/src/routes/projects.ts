@@ -20,7 +20,7 @@ app.use('*', authMiddleware);
  */
 app.get('/', requirePermissions('projects:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const status = c.req.query('status');
     const priority = c.req.query('priority');
     const companyId = c.req.query('companyId');
@@ -57,7 +57,7 @@ app.get('/', requirePermissions('projects:read'), async (c) => {
  */
 app.get('/stats', requirePermissions('projects:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await projectService.getStats(organizationId);
 
     return c.json({
@@ -82,7 +82,7 @@ app.get('/stats', requirePermissions('projects:read'), async (c) => {
  */
 app.get('/:id', requirePermissions('projects:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const projectId = c.req.param('id');
 
     const project = await projectService.getById(organizationId, projectId);
@@ -122,7 +122,7 @@ app.get('/:id', requirePermissions('projects:read'), async (c) => {
  */
 app.post('/', requirePermissions('projects:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -169,7 +169,7 @@ app.post('/', requirePermissions('projects:create'), async (c) => {
  */
 app.put('/:id', requirePermissions('projects:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const projectId = c.req.param('id');
     const body = await c.req.json();
 
@@ -229,7 +229,7 @@ app.put('/:id', requirePermissions('projects:update'), async (c) => {
  */
 app.delete('/:id', requirePermissions('projects:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const projectId = c.req.param('id');
 
     try {

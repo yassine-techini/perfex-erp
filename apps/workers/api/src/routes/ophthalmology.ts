@@ -301,7 +301,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
 
       // Get patient counts from ophthalmology_patients table using raw SQL
       const totalPatientsResult = await db.run(sql`
@@ -409,7 +409,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get patients with ophthalmology extension joined using parameterized SQL
@@ -510,7 +510,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
 
       // Get patient from ophthalmology_patients joined with healthcare_patients
@@ -638,7 +638,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
 
       // Check if patient exists in ophthalmology_patients
@@ -688,7 +688,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -757,7 +757,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -778,12 +778,12 @@ ophthalmology.put(
         }, 404);
       }
 
-      const now = new Date();
+      const now = new Date().toISOString();
       await db
         .update(healthcarePatients)
         .set({
           ...data,
-          dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+          dateOfBirth: data.dateOfBirth || undefined,
           allergies: data.allergies ? JSON.stringify(data.allergies) : undefined,
           medicalHistory: data.medicalHistory ? JSON.stringify(data.medicalHistory) : undefined,
           familyHistory: data.familyHistory ? JSON.stringify(data.familyHistory) : undefined,
@@ -831,7 +831,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -888,7 +888,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const consultationId = c.req.param('id');
 
       const [consultation] = await db
@@ -933,7 +933,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1005,7 +1005,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const consultationId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -1027,11 +1027,11 @@ ophthalmology.put(
         }, 404);
       }
 
-      const now = new Date();
+      const now = new Date().toISOString();
       await db
         .update(healthcareConsultations)
         .set({
-          consultationDate: data.consultationDate ? new Date(data.consultationDate) : undefined,
+          consultationDate: data.consultationDate || undefined,
           consultationType: data.consultationType,
           providerId: data.providerId,
           chiefComplaint: data.chiefComplaint,
@@ -1041,7 +1041,7 @@ ophthalmology.put(
           diagnosis: data.diagnosis ? JSON.stringify(data.diagnosis) : undefined,
           treatmentPlan: data.treatmentPlan,
           prescriptions: data.prescriptions ? JSON.stringify(data.prescriptions) : undefined,
-          followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined,
+          followUpDate: data.followUpDate || undefined,
           notes: data.notes,
           updatedAt: now,
         })
@@ -1085,7 +1085,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get OCT records with parameterized SQL
@@ -1178,7 +1178,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const octId = c.req.param('id');
 
       const [oct] = await db
@@ -1222,7 +1222,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1299,7 +1299,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const octId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -1378,7 +1378,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologyVisualFields.companyId, organizationId)];
@@ -1436,7 +1436,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const vfId = c.req.param('id');
 
       const [vf] = await db
@@ -1480,7 +1480,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1558,7 +1558,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const vfId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -1638,7 +1638,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologyBiometry.companyId, organizationId)];
@@ -1696,7 +1696,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const biometryId = c.req.param('id');
 
       const [biometry] = await db
@@ -1740,7 +1740,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1816,7 +1816,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const biometryId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -1896,7 +1896,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Use parameterized SQL with correct column names from migration
@@ -1966,7 +1966,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const iolId = c.req.param('id');
 
       const [iol] = await db
@@ -2010,7 +2010,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2086,7 +2086,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const iolId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -2123,7 +2123,7 @@ ophthalmology.put(
           lotNumber: data.lotNumber,
           formulaUsed: data.formulaUsed,
           targetRefraction: data.targetRefraction,
-          surgeonId: data.surgeonId,
+          surgeon: data.surgeonId,
           notes: data.notes,
           updatedAt: now,
         })
@@ -2164,7 +2164,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologyIvtInjections.companyId, organizationId)];
@@ -2222,7 +2222,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const ivtId = c.req.param('id');
 
       const [ivt] = await db
@@ -2265,7 +2265,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const ivtId = c.req.param('id');
 
       const [ivt] = await db
@@ -2309,7 +2309,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2384,7 +2384,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const ivtId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -2419,8 +2419,8 @@ ophthalmology.put(
           treatmentProtocol: data.treatmentProtocol,
           injectionInSeries: data.injectionInSeries,
           quadrant: data.quadrant,
-          preIop: data.preIop,
-          postIop: data.postIop,
+          preIopOd: data.preIop,
+          postIopOd: data.postIop,
           performedBy: data.performedById,
           notes: data.notes,
           updatedAt: now,
@@ -2462,7 +2462,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologySurgeries.companyId, organizationId)];
@@ -2520,7 +2520,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const surgeryId = c.req.param('id');
 
       const [surgery] = await db
@@ -2564,7 +2564,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2635,7 +2635,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const surgeryId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -2655,17 +2655,17 @@ ophthalmology.put(
         }, 404);
       }
 
-      const now = new Date();
+      const now = new Date().toISOString();
       await db
         .update(ophthalmologySurgeries)
         .set({
-          surgeryDate: data.surgeryDate ? new Date(data.surgeryDate) : undefined,
+          surgeryDate: data.surgeryDate || undefined,
           eye: data.eye,
           surgeryType: data.surgeryType,
           surgerySubtype: data.surgerySubtype,
           indication: data.indication,
           anesthesiaType: data.anesthesiaType,
-          surgeonId: data.surgeonId,
+          surgeon: data.surgeonId,
           procedureDetails: data.procedureDetails,
           intraOpFindings: data.intraOpFindings,
           surgeryOutcome: data.surgeryOutcome,
@@ -2711,7 +2711,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Use parameterized SQL with correct column names from migration
@@ -2782,7 +2782,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const refractionId = c.req.param('id');
 
       const [refraction] = await db
@@ -2826,7 +2826,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2901,7 +2901,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const refractionId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -2980,7 +2980,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologyTonometry.companyId, organizationId)];
@@ -3034,7 +3034,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const tonometryId = c.req.param('id');
 
       const [tonometry] = await db
@@ -3078,7 +3078,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -3150,7 +3150,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const tonometryId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -3226,7 +3226,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(ophthalmologyOsdiScores.companyId, organizationId)];
@@ -3280,7 +3280,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const osdiId = c.req.param('id');
 
       const [osdi] = await db
@@ -3324,7 +3324,7 @@ ophthalmology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -3410,7 +3410,7 @@ ophthalmology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const osdiId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -3522,7 +3522,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -3597,7 +3597,7 @@ ophthalmology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -3669,15 +3669,15 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const consultationId = c.req.param('id');
 
       await db
-        .delete(ophthalmologyConsultations)
+        .delete(healthcareConsultations)
         .where(
           and(
-            eq(ophthalmologyConsultations.id, consultationId),
-            eq(ophthalmologyConsultations.companyId, organizationId)
+            eq(healthcareConsultations.id, consultationId),
+            eq(healthcareConsultations.companyId, organizationId)
           )
         );
 
@@ -3701,7 +3701,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const octId = c.req.param('id');
 
       await db
@@ -3733,7 +3733,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const vfId = c.req.param('id');
 
       await db
@@ -3765,7 +3765,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const biometryId = c.req.param('id');
 
       await db
@@ -3797,7 +3797,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const iolId = c.req.param('id');
 
       await db
@@ -3829,7 +3829,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const ivtId = c.req.param('id');
 
       await db
@@ -3861,7 +3861,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const surgeryId = c.req.param('id');
 
       await db
@@ -3893,7 +3893,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const refractionId = c.req.param('id');
 
       await db
@@ -3925,7 +3925,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const tonometryId = c.req.param('id');
 
       await db
@@ -3957,7 +3957,7 @@ ophthalmology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const osdiId = c.req.param('id');
 
       await db

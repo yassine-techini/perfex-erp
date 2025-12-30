@@ -31,7 +31,7 @@ app.use('*', authMiddleware);
  */
 app.get('/departments', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const active = c.req.query('active');
 
     const departments = await hrService.listDepartments(organizationId, { active });
@@ -58,7 +58,7 @@ app.get('/departments', requirePermissions('hr:read'), async (c) => {
  */
 app.get('/departments/:id', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const departmentId = c.req.param('id');
 
     const department = await hrService.getDepartmentById(organizationId, departmentId);
@@ -98,7 +98,7 @@ app.get('/departments/:id', requirePermissions('hr:read'), async (c) => {
  */
 app.post('/departments', requirePermissions('hr:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -144,7 +144,7 @@ app.post('/departments', requirePermissions('hr:create'), async (c) => {
  */
 app.put('/departments/:id', requirePermissions('hr:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const departmentId = c.req.param('id');
     const body = await c.req.json();
 
@@ -199,7 +199,7 @@ app.put('/departments/:id', requirePermissions('hr:update'), async (c) => {
  */
 app.delete('/departments/:id', requirePermissions('hr:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const departmentId = c.req.param('id');
 
     await hrService.deleteDepartment(organizationId, departmentId);
@@ -242,7 +242,7 @@ app.delete('/departments/:id', requirePermissions('hr:delete'), async (c) => {
  */
 app.get('/employees', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const departmentId = c.req.query('departmentId');
     const employmentType = c.req.query('employmentType');
     const active = c.req.query('active');
@@ -277,7 +277,7 @@ app.get('/employees', requirePermissions('hr:read'), async (c) => {
  */
 app.get('/employees/stats', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await hrService.getStats(organizationId);
 
     return c.json({
@@ -302,7 +302,7 @@ app.get('/employees/stats', requirePermissions('hr:read'), async (c) => {
  */
 app.get('/employees/:id', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const employeeId = c.req.param('id');
 
     const employee = await hrService.getEmployeeById(organizationId, employeeId);
@@ -342,7 +342,7 @@ app.get('/employees/:id', requirePermissions('hr:read'), async (c) => {
  */
 app.post('/employees', requirePermissions('hr:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -388,7 +388,7 @@ app.post('/employees', requirePermissions('hr:create'), async (c) => {
  */
 app.put('/employees/:id', requirePermissions('hr:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const employeeId = c.req.param('id');
     const body = await c.req.json();
 
@@ -443,7 +443,7 @@ app.put('/employees/:id', requirePermissions('hr:update'), async (c) => {
  */
 app.delete('/employees/:id', requirePermissions('hr:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const employeeId = c.req.param('id');
 
     await hrService.deleteEmployee(organizationId, employeeId);
@@ -486,7 +486,7 @@ app.delete('/employees/:id', requirePermissions('hr:delete'), async (c) => {
  */
 app.get('/leave-requests', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const employeeId = c.req.query('employeeId');
     const status = c.req.query('status');
     const leaveType = c.req.query('leaveType');
@@ -519,7 +519,7 @@ app.get('/leave-requests', requirePermissions('hr:read'), async (c) => {
  */
 app.get('/leave-requests/:id', requirePermissions('hr:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const leaveRequestId = c.req.param('id');
 
     const leaveRequest = await hrService.getLeaveRequestById(organizationId, leaveRequestId);
@@ -559,7 +559,7 @@ app.get('/leave-requests/:id', requirePermissions('hr:read'), async (c) => {
  */
 app.post('/leave-requests', requirePermissions('hr:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -605,7 +605,7 @@ app.post('/leave-requests', requirePermissions('hr:create'), async (c) => {
  */
 app.put('/leave-requests/:id', requirePermissions('hr:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const leaveRequestId = c.req.param('id');
     const body = await c.req.json();
@@ -661,7 +661,7 @@ app.put('/leave-requests/:id', requirePermissions('hr:update'), async (c) => {
  */
 app.delete('/leave-requests/:id', requirePermissions('hr:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const leaveRequestId = c.req.param('id');
 
     await hrService.deleteLeaveRequest(organizationId, leaveRequestId);

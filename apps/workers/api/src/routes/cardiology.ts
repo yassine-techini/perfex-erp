@@ -254,7 +254,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
 
       // Get patient counts from cardiology_patients table using raw SQL
       const totalPatientsResult = await db.run(sql`
@@ -356,7 +356,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get patients with cardiology extension joined
@@ -454,7 +454,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
 
       // Get patient from cardiology_patients joined with healthcare_patients
@@ -576,7 +576,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -645,7 +645,7 @@ cardiology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -723,7 +723,7 @@ cardiology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const patientId = c.req.param('id');
 
       // Check if patient exists in cardiology_patients
@@ -777,7 +777,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -834,7 +834,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const consultationId = c.req.param('id');
 
       const [consultation] = await db
@@ -879,7 +879,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -963,7 +963,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get ECG records with parameterized SQL
@@ -1048,7 +1048,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const ecgId = c.req.param('id');
 
       const [ecg] = await db
@@ -1092,7 +1092,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1172,7 +1172,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyEchocardiograms.companyId, organizationId)];
@@ -1226,7 +1226,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const echoId = c.req.param('id');
 
       const [echo] = await db
@@ -1270,7 +1270,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1355,7 +1355,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyPacemakers.companyId, organizationId)];
@@ -1413,7 +1413,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const pacemakerId = c.req.param('id');
 
       const [pacemaker] = await db
@@ -1457,7 +1457,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1535,7 +1535,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get stents with parameterized SQL (migration uses implant_date, not procedure_date)
@@ -1620,7 +1620,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const stentId = c.req.param('id');
 
       const [stent] = await db
@@ -1664,7 +1664,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1743,7 +1743,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyRiskScores.companyId, organizationId)];
@@ -1801,7 +1801,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const scoreId = c.req.param('id');
 
       const [score] = await db
@@ -1845,7 +1845,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -1912,7 +1912,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyMedications.companyId, organizationId)];
@@ -1970,7 +1970,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const medId = c.req.param('id');
 
       const [medication] = await db
@@ -2014,7 +2014,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2086,7 +2086,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyCardiacEvents.companyId, organizationId)];
@@ -2148,7 +2148,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const eventId = c.req.param('id');
 
       const [event] = await db
@@ -2199,7 +2199,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Get reports from healthcare_examinations table with parameterized SQL
@@ -2278,7 +2278,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       // Calculate date range
@@ -2408,7 +2408,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -2483,7 +2483,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [
@@ -2552,7 +2552,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const appointmentId = c.req.param('id');
 
       const [appointment] = await db
@@ -2601,7 +2601,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const query = c.req.valid('query');
 
       const conditions = [eq(cardiologyHolterRecords.companyId, organizationId)];
@@ -2659,7 +2659,7 @@ cardiology.get(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const holterId = c.req.param('id');
 
       const [holter] = await db
@@ -2711,7 +2711,7 @@ cardiology.post(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -2796,7 +2796,7 @@ cardiology.put(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const holterId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -2890,7 +2890,7 @@ cardiology.delete(
   async (c) => {
     try {
       const db = getDb();
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const holterId = c.req.param('id');
 
       // Check if holter exists

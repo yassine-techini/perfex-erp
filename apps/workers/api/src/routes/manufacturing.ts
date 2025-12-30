@@ -24,7 +24,7 @@ app.use('*', authMiddleware);
 // ============================================
 
 app.get('/boms', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const productId = c.req.query('productId');
   const status = c.req.query('status');
 
@@ -33,13 +33,13 @@ app.get('/boms', requirePermissions('manufacturing:read'), async (c) => {
 });
 
 app.get('/boms/stats', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await manufacturingService.getStats(organizationId);
   return c.json({ success: true, data: stats });
 });
 
 app.get('/boms/:id', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const bomId = c.req.param('id');
 
   const bom = await manufacturingService.getBOMById(organizationId, bomId);
@@ -51,7 +51,7 @@ app.get('/boms/:id', requirePermissions('manufacturing:read'), async (c) => {
 });
 
 app.post('/boms', requirePermissions('manufacturing:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -68,7 +68,7 @@ app.post('/boms', requirePermissions('manufacturing:create'), async (c) => {
 });
 
 app.put('/boms/:id', requirePermissions('manufacturing:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const bomId = c.req.param('id');
   const body = await c.req.json();
 
@@ -92,7 +92,7 @@ app.put('/boms/:id', requirePermissions('manufacturing:update'), async (c) => {
 });
 
 app.delete('/boms/:id', requirePermissions('manufacturing:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const bomId = c.req.param('id');
 
   try {
@@ -111,7 +111,7 @@ app.delete('/boms/:id', requirePermissions('manufacturing:delete'), async (c) =>
 // ============================================
 
 app.get('/routings', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const productId = c.req.query('productId');
   const status = c.req.query('status');
 
@@ -120,7 +120,7 @@ app.get('/routings', requirePermissions('manufacturing:read'), async (c) => {
 });
 
 app.get('/routings/:id', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const routingId = c.req.param('id');
 
   const routing = await manufacturingService.getRoutingById(organizationId, routingId);
@@ -132,7 +132,7 @@ app.get('/routings/:id', requirePermissions('manufacturing:read'), async (c) => 
 });
 
 app.post('/routings', requirePermissions('manufacturing:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -149,7 +149,7 @@ app.post('/routings', requirePermissions('manufacturing:create'), async (c) => {
 });
 
 app.put('/routings/:id', requirePermissions('manufacturing:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const routingId = c.req.param('id');
   const body = await c.req.json();
 
@@ -173,7 +173,7 @@ app.put('/routings/:id', requirePermissions('manufacturing:update'), async (c) =
 });
 
 app.delete('/routings/:id', requirePermissions('manufacturing:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const routingId = c.req.param('id');
 
   try {
@@ -192,7 +192,7 @@ app.delete('/routings/:id', requirePermissions('manufacturing:delete'), async (c
 // ============================================
 
 app.get('/work-orders', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const status = c.req.query('status');
   const priority = c.req.query('priority');
   const search = c.req.query('search');
@@ -202,7 +202,7 @@ app.get('/work-orders', requirePermissions('manufacturing:read'), async (c) => {
 });
 
 app.get('/work-orders/:id', requirePermissions('manufacturing:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const workOrderId = c.req.param('id');
 
   const workOrder = await manufacturingService.getWorkOrderById(organizationId, workOrderId);
@@ -214,7 +214,7 @@ app.get('/work-orders/:id', requirePermissions('manufacturing:read'), async (c) 
 });
 
 app.post('/work-orders', requirePermissions('manufacturing:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -231,7 +231,7 @@ app.post('/work-orders', requirePermissions('manufacturing:create'), async (c) =
 });
 
 app.put('/work-orders/:id', requirePermissions('manufacturing:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const workOrderId = c.req.param('id');
   const body = await c.req.json();
 
@@ -255,7 +255,7 @@ app.put('/work-orders/:id', requirePermissions('manufacturing:update'), async (c
 });
 
 app.delete('/work-orders/:id', requirePermissions('manufacturing:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const workOrderId = c.req.param('id');
 
   try {

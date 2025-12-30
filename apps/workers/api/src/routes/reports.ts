@@ -26,7 +26,7 @@ reportsRouter.post(
   checkPermission('finance:reports:read'),
   zValidator('json', reportFiltersSchema),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     if (!organizationId) {
       return c.json(
         { error: { code: 'MISSING_ORGANIZATION', message: 'Organization ID is required' } },
@@ -52,7 +52,7 @@ reportsRouter.post(
   checkPermission('finance:reports:read'),
   zValidator('json', reportFiltersSchema),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     if (!organizationId) {
       return c.json(
         { error: { code: 'MISSING_ORGANIZATION', message: 'Organization ID is required' } },
@@ -79,7 +79,7 @@ reportsRouter.post(
     asOfDate: z.string().datetime().or(z.date()),
   })),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     if (!organizationId) {
       return c.json(
         { error: { code: 'MISSING_ORGANIZATION', message: 'Organization ID is required' } },
@@ -105,7 +105,7 @@ reportsRouter.post(
   checkPermission('finance:reports:read'),
   zValidator('json', reportFiltersSchema),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     if (!organizationId) {
       return c.json(
         { error: { code: 'MISSING_ORGANIZATION', message: 'Organization ID is required' } },

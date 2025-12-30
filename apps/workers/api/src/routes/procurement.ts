@@ -24,7 +24,7 @@ app.use('*', authMiddleware);
 
 app.get('/suppliers', requirePermissions('procurement:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const active = c.req.query('active');
     const search = c.req.query('search');
 
@@ -44,7 +44,7 @@ app.get('/suppliers', requirePermissions('procurement:read'), async (c) => {
 
 app.get('/suppliers/stats', requirePermissions('procurement:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await procurementService.getStats(organizationId);
     return c.json({ success: true, data: stats });
   } catch (error) {
@@ -61,7 +61,7 @@ app.get('/suppliers/stats', requirePermissions('procurement:read'), async (c) =>
 
 app.get('/suppliers/:id', requirePermissions('procurement:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const supplierId = c.req.param('id');
 
     const supplier = await procurementService.getSupplierById(organizationId, supplierId);
@@ -84,7 +84,7 @@ app.get('/suppliers/:id', requirePermissions('procurement:read'), async (c) => {
 
 app.post('/suppliers', requirePermissions('procurement:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -112,7 +112,7 @@ app.post('/suppliers', requirePermissions('procurement:create'), async (c) => {
 
 app.put('/suppliers/:id', requirePermissions('procurement:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const supplierId = c.req.param('id');
     const body = await c.req.json();
 
@@ -143,7 +143,7 @@ app.put('/suppliers/:id', requirePermissions('procurement:update'), async (c) =>
 
 app.delete('/suppliers/:id', requirePermissions('procurement:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const supplierId = c.req.param('id');
 
     await procurementService.deleteSupplier(organizationId, supplierId);
@@ -169,7 +169,7 @@ app.delete('/suppliers/:id', requirePermissions('procurement:delete'), async (c)
 
 app.get('/purchase-orders', requirePermissions('procurement:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const supplierId = c.req.query('supplierId');
     const status = c.req.query('status');
 
@@ -189,7 +189,7 @@ app.get('/purchase-orders', requirePermissions('procurement:read'), async (c) =>
 
 app.get('/purchase-orders/:id', requirePermissions('procurement:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
 
     const order = await procurementService.getPurchaseOrderById(organizationId, orderId);
@@ -212,7 +212,7 @@ app.get('/purchase-orders/:id', requirePermissions('procurement:read'), async (c
 
 app.post('/purchase-orders', requirePermissions('procurement:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -240,7 +240,7 @@ app.post('/purchase-orders', requirePermissions('procurement:create'), async (c)
 
 app.put('/purchase-orders/:id', requirePermissions('procurement:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
     const body = await c.req.json();
 
@@ -271,7 +271,7 @@ app.put('/purchase-orders/:id', requirePermissions('procurement:update'), async 
 
 app.delete('/purchase-orders/:id', requirePermissions('procurement:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
 
     await procurementService.deletePurchaseOrder(organizationId, orderId);

@@ -25,7 +25,7 @@ opportunities.get(
   requirePermission('crm:opportunities:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const companyId = c.req.query('companyId');
       const stageId = c.req.query('stageId');
       const status = c.req.query('status');
@@ -70,7 +70,7 @@ opportunities.get(
   requirePermission('crm:opportunities:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const stats = await opportunityService.getStats(organizationId);
 
       return c.json({
@@ -99,7 +99,7 @@ opportunities.get(
   requirePermission('crm:opportunities:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const opportunityId = c.req.param('id');
 
       const opportunity = await opportunityService.getByIdWithDetails(organizationId, opportunityId);
@@ -135,7 +135,7 @@ opportunities.post(
   zValidator('json', createOpportunitySchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -168,7 +168,7 @@ opportunities.put(
   zValidator('json', updateOpportunitySchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const opportunityId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -200,7 +200,7 @@ opportunities.delete(
   requirePermission('crm:opportunities:delete'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const opportunityId = c.req.param('id');
 
       await opportunityService.delete(organizationId, opportunityId);

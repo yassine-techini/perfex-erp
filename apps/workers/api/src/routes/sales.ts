@@ -22,7 +22,7 @@ app.use('*', authMiddleware);
 
 app.get('/orders', requirePermissions('sales:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const companyId = c.req.query('companyId');
     const status = c.req.query('status');
     const search = c.req.query('search');
@@ -43,7 +43,7 @@ app.get('/orders', requirePermissions('sales:read'), async (c) => {
 
 app.get('/orders/stats', requirePermissions('sales:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stats = await salesService.getStats(organizationId);
     return c.json({ success: true, data: stats });
   } catch (error) {
@@ -60,7 +60,7 @@ app.get('/orders/stats', requirePermissions('sales:read'), async (c) => {
 
 app.get('/orders/:id', requirePermissions('sales:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
 
     const order = await salesService.getSalesOrderById(organizationId, orderId);
@@ -83,7 +83,7 @@ app.get('/orders/:id', requirePermissions('sales:read'), async (c) => {
 
 app.post('/orders', requirePermissions('sales:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const body = await c.req.json();
 
@@ -111,7 +111,7 @@ app.post('/orders', requirePermissions('sales:create'), async (c) => {
 
 app.put('/orders/:id', requirePermissions('sales:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
     const body = await c.req.json();
 
@@ -142,7 +142,7 @@ app.put('/orders/:id', requirePermissions('sales:update'), async (c) => {
 
 app.delete('/orders/:id', requirePermissions('sales:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const orderId = c.req.param('id');
 
     await salesService.deleteSalesOrder(organizationId, orderId);

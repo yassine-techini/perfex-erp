@@ -25,7 +25,7 @@ contacts.get(
   requirePermission('crm:contacts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const companyId = c.req.query('companyId');
       const status = c.req.query('status');
       const assignedTo = c.req.query('assignedTo');
@@ -69,7 +69,7 @@ contacts.get(
   requirePermission('crm:contacts:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const contactId = c.req.param('id');
       const includeCompany = c.req.query('includeCompany') === 'true';
 
@@ -108,7 +108,7 @@ contacts.post(
   zValidator('json', createContactSchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -141,7 +141,7 @@ contacts.put(
   zValidator('json', updateContactSchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const contactId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -173,7 +173,7 @@ contacts.delete(
   requirePermission('crm:contacts:delete'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const contactId = c.req.param('id');
 
       await contactService.delete(organizationId, contactId);

@@ -33,7 +33,7 @@ const app = new Hono();
 // ============================================
 
 app.get('/workflows', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { entityType, isActive } = c.req.query();
 
   const workflows = await workflowsService.listWorkflows(organizationId, {
@@ -45,7 +45,7 @@ app.get('/workflows', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/workflows', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -62,7 +62,7 @@ app.post('/workflows', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.get('/workflows/:id', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   const workflow = await workflowsService.getWorkflowById(organizationId, id);
@@ -74,7 +74,7 @@ app.get('/workflows/:id', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.put('/workflows/:id', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
   const body = await c.req.json();
 
@@ -95,7 +95,7 @@ app.put('/workflows/:id', requirePermissions('workflows:update'), async (c) => {
 });
 
 app.delete('/workflows/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -111,7 +111,7 @@ app.delete('/workflows/:id', requirePermissions('workflows:delete'), async (c) =
 // ============================================
 
 app.get('/workflows/:workflowId/steps', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { workflowId } = c.req.param();
 
   const steps = await workflowsService.listWorkflowSteps(organizationId, workflowId);
@@ -119,7 +119,7 @@ app.get('/workflows/:workflowId/steps', requirePermissions('workflows:read'), as
 });
 
 app.post('/workflows/:workflowId/steps', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const body = await c.req.json();
 
   const validation = createWorkflowStepSchema.safeParse(body);
@@ -139,7 +139,7 @@ app.post('/workflows/:workflowId/steps', requirePermissions('workflows:create'),
 // ============================================
 
 app.post('/workflows/trigger', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -156,7 +156,7 @@ app.post('/workflows/trigger', requirePermissions('workflows:create'), async (c)
 });
 
 app.get('/workflows/instances', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { workflowId, entityType, entityId, status } = c.req.query();
 
   const instances = await workflowsService.listWorkflowInstances(organizationId, {
@@ -174,7 +174,7 @@ app.get('/workflows/instances', requirePermissions('workflows:read'), async (c) 
 // ============================================
 
 app.get('/approvals', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const { status } = c.req.query();
 
@@ -187,7 +187,7 @@ app.get('/approvals', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/approvals', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -204,7 +204,7 @@ app.post('/approvals', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.post('/approvals/:id/respond', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const { id } = c.req.param();
   const body = await c.req.json();
@@ -230,7 +230,7 @@ app.post('/approvals/:id/respond', requirePermissions('workflows:update'), async
 // ============================================
 
 app.get('/activities', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { entityType, entityId, userId } = c.req.query();
 
   const activities = await workflowsService.listActivities(organizationId, {
@@ -243,7 +243,7 @@ app.get('/activities', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/activities', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const body = await c.req.json();
 
   const validation = createActivityFeedSchema.safeParse(body);
@@ -263,7 +263,7 @@ app.post('/activities', requirePermissions('workflows:create'), async (c) => {
 // ============================================
 
 app.get('/comments', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { entityType, entityId } = c.req.query();
 
   if (!entityType || !entityId) {
@@ -278,7 +278,7 @@ app.get('/comments', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/comments', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -295,7 +295,7 @@ app.post('/comments', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.put('/comments/:id', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const { id } = c.req.param();
   const body = await c.req.json();
@@ -317,7 +317,7 @@ app.put('/comments/:id', requirePermissions('workflows:update'), async (c) => {
 });
 
 app.delete('/comments/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const { id } = c.req.param();
 
@@ -334,13 +334,13 @@ app.delete('/comments/:id', requirePermissions('workflows:delete'), async (c) =>
 // ============================================
 
 app.get('/webhooks', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const webhooks = await workflowsService.listWebhooks(organizationId);
   return c.json({ success: true, data: webhooks });
 });
 
 app.post('/webhooks', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -357,7 +357,7 @@ app.post('/webhooks', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.get('/webhooks/:id', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   const webhook = await workflowsService.getWebhookById(organizationId, id);
@@ -369,7 +369,7 @@ app.get('/webhooks/:id', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.put('/webhooks/:id', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
   const body = await c.req.json();
 
@@ -390,7 +390,7 @@ app.put('/webhooks/:id', requirePermissions('workflows:update'), async (c) => {
 });
 
 app.delete('/webhooks/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -406,13 +406,13 @@ app.delete('/webhooks/:id', requirePermissions('workflows:delete'), async (c) =>
 // ============================================
 
 app.get('/api-keys', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const keys = await workflowsService.listApiKeys(organizationId);
   return c.json({ success: true, data: keys });
 });
 
 app.post('/api-keys', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -429,7 +429,7 @@ app.post('/api-keys', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.put('/api-keys/:id', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
   const body = await c.req.json();
 
@@ -450,7 +450,7 @@ app.put('/api-keys/:id', requirePermissions('workflows:update'), async (c) => {
 });
 
 app.delete('/api-keys/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -466,7 +466,7 @@ app.delete('/api-keys/:id', requirePermissions('workflows:delete'), async (c) =>
 // ============================================
 
 app.get('/tags', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { category } = c.req.query();
 
   const tagsList = await workflowsService.listTags(organizationId, category);
@@ -474,7 +474,7 @@ app.get('/tags', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/tags', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -491,7 +491,7 @@ app.post('/tags', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.put('/tags/:id', requirePermissions('workflows:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
   const body = await c.req.json();
 
@@ -512,7 +512,7 @@ app.put('/tags/:id', requirePermissions('workflows:update'), async (c) => {
 });
 
 app.delete('/tags/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -528,7 +528,7 @@ app.delete('/tags/:id', requirePermissions('workflows:delete'), async (c) => {
 // ============================================
 
 app.get('/entity-tags', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { entityType, entityId } = c.req.query();
 
   if (!entityType || !entityId) {
@@ -543,7 +543,7 @@ app.get('/entity-tags', requirePermissions('workflows:read'), async (c) => {
 });
 
 app.post('/entity-tags', requirePermissions('workflows:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -560,7 +560,7 @@ app.post('/entity-tags', requirePermissions('workflows:create'), async (c) => {
 });
 
 app.delete('/entity-tags/:id', requirePermissions('workflows:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const { id } = c.req.param();
 
   try {
@@ -576,7 +576,7 @@ app.delete('/entity-tags/:id', requirePermissions('workflows:delete'), async (c)
 // ============================================
 
 app.get('/stats', requirePermissions('workflows:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await workflowsService.getStats(organizationId);
   return c.json({ success: true, data: stats });
 });

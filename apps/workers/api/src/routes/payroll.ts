@@ -24,7 +24,7 @@ app.use('*', authMiddleware);
  */
 app.get('/periods', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const year = c.req.query('year');
 
     const periods = await payrollService.listPeriods(
@@ -54,7 +54,7 @@ app.get('/periods', requirePermissions('payroll:read'), async (c) => {
  */
 app.get('/periods/:id', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const periodId = c.req.param('id');
 
     const period = await payrollService.getPeriodById(organizationId, periodId);
@@ -88,7 +88,7 @@ app.get('/periods/:id', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/periods', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const monthNames = [
@@ -129,7 +129,7 @@ app.post('/periods', requirePermissions('payroll:create'), async (c) => {
  */
 app.put('/periods/:id', requirePermissions('payroll:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const periodId = c.req.param('id');
     const body = await c.req.json();
 
@@ -168,7 +168,7 @@ app.put('/periods/:id', requirePermissions('payroll:update'), async (c) => {
  */
 app.delete('/periods/:id', requirePermissions('payroll:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const periodId = c.req.param('id');
 
     await payrollService.deletePeriod(periodId, organizationId);
@@ -199,7 +199,7 @@ app.delete('/periods/:id', requirePermissions('payroll:delete'), async (c) => {
  */
 app.get('/components', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const components = await payrollService.listComponents(organizationId);
 
     return c.json({
@@ -224,7 +224,7 @@ app.get('/components', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/components', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const component = await payrollService.createComponent({
@@ -264,7 +264,7 @@ app.post('/components', requirePermissions('payroll:create'), async (c) => {
  */
 app.put('/components/:id', requirePermissions('payroll:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const componentId = c.req.param('id');
     const body = await c.req.json();
 
@@ -299,7 +299,7 @@ app.put('/components/:id', requirePermissions('payroll:update'), async (c) => {
  */
 app.delete('/components/:id', requirePermissions('payroll:delete'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const componentId = c.req.param('id');
 
     await payrollService.deleteComponent(componentId, organizationId);
@@ -496,7 +496,7 @@ app.get('/payslips/:id', requirePermissions('payroll:read'), async (c) => {
  * Calculate payslip for an employee
  */
 app.post('/periods/:periodId/calculate/:employeeId', requirePermissions('payroll:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const periodId = c.req.param('periodId');
   const employeeId = c.req.param('employeeId');
 
@@ -697,7 +697,7 @@ app.delete('/bonuses/:id', requirePermissions('payroll:delete'), async (c) => {
  */
 app.get('/contributions', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const contributions = await payrollService.listContributions(organizationId);
 
     return c.json({
@@ -722,7 +722,7 @@ app.get('/contributions', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/contributions', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const contribution = await payrollService.createContribution({
@@ -762,7 +762,7 @@ app.post('/contributions', requirePermissions('payroll:create'), async (c) => {
  */
 app.put('/contributions/:id', requirePermissions('payroll:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const contributionId = c.req.param('id');
     const body = await c.req.json();
 
@@ -804,7 +804,7 @@ app.put('/contributions/:id', requirePermissions('payroll:update'), async (c) =>
  */
 app.get('/overtime-rules', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const rules = await payrollService.listOvertimeRules(organizationId);
 
     return c.json({
@@ -829,7 +829,7 @@ app.get('/overtime-rules', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/overtime-rules', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const rule = await payrollService.createOvertimeRule({
@@ -867,7 +867,7 @@ app.post('/overtime-rules', requirePermissions('payroll:create'), async (c) => {
  */
 app.put('/overtime-rules/:id', requirePermissions('payroll:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const ruleId = c.req.param('id');
     const body = await c.req.json();
 
@@ -906,7 +906,7 @@ app.put('/overtime-rules/:id', requirePermissions('payroll:update'), async (c) =
  */
 app.get('/declarations', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const periodId = c.req.query('periodId');
 
     const declarations = await payrollService.listDeclarations(organizationId, periodId);
@@ -933,7 +933,7 @@ app.get('/declarations', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/declarations', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const body = await c.req.json();
 
     const declaration = await payrollService.createDeclaration({
@@ -969,7 +969,7 @@ app.post('/declarations', requirePermissions('payroll:create'), async (c) => {
  */
 app.put('/declarations/:id', requirePermissions('payroll:update'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const userId = c.get('userId');
     const declarationId = c.req.param('id');
     const body = await c.req.json();
@@ -1018,7 +1018,7 @@ app.put('/declarations/:id', requirePermissions('payroll:update'), async (c) => 
  */
 app.get('/stats', requirePermissions('payroll:read'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const year = c.req.query('year');
 
     const stats = await payrollService.getStats(organizationId, year ? parseInt(year) : undefined);
@@ -1045,7 +1045,7 @@ app.get('/stats', requirePermissions('payroll:read'), async (c) => {
  */
 app.post('/seed', requirePermissions('payroll:create'), async (c) => {
   try {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
 
     const contributions = await payrollService.seedDefaultContributions(organizationId);
     const overtimeRules = await payrollService.seedDefaultOvertimeRules(organizationId);

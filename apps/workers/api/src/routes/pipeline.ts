@@ -23,7 +23,7 @@ pipeline.get(
   '/',
   requirePermission('crm:pipeline:read'),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const activeOnly = c.req.query('active') === 'true';
 
     const stages = await pipelineService.list(organizationId, activeOnly);
@@ -43,7 +43,7 @@ pipeline.post(
   '/defaults',
   requirePermission('crm:pipeline:create'),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
 
     await pipelineService.createDefaults(organizationId);
 
@@ -64,7 +64,7 @@ pipeline.get(
   '/:id',
   requirePermission('crm:pipeline:read'),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stageId = c.req.param('id');
 
     const stage = await pipelineService.getById(organizationId, stageId);
@@ -89,7 +89,7 @@ pipeline.post(
   requirePermission('crm:pipeline:create'),
   zValidator('json', createPipelineStageSchema),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const data = c.req.valid('json');
 
     const stage = await pipelineService.create(organizationId, data);
@@ -110,7 +110,7 @@ pipeline.put(
   requirePermission('crm:pipeline:update'),
   zValidator('json', updatePipelineStageSchema),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stageId = c.req.param('id');
     const data = c.req.valid('json');
 
@@ -131,7 +131,7 @@ pipeline.delete(
   '/:id',
   requirePermission('crm:pipeline:delete'),
   async (c) => {
-    const organizationId = c.get('organizationId');
+    const organizationId = c.get('organizationId')!;
     const stageId = c.req.param('id');
 
     await pipelineService.delete(organizationId, stageId);

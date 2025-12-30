@@ -22,7 +22,7 @@ app.use('*', authMiddleware);
  * List all recipe categories
  */
 app.get('/categories', requirePermissions('recipes:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categories = await recipeService.listCategories(organizationId);
 
   return c.json({
@@ -36,7 +36,7 @@ app.get('/categories', requirePermissions('recipes:read'), async (c) => {
  * Create a new category
  */
 app.post('/categories', requirePermissions('recipes:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const body = await c.req.json();
 
   const category = await recipeService.createCategory({
@@ -58,7 +58,7 @@ app.post('/categories', requirePermissions('recipes:create'), async (c) => {
  * Update a category
  */
 app.put('/categories/:id', requirePermissions('recipes:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categoryId = c.req.param('id');
   const body = await c.req.json();
 
@@ -82,7 +82,7 @@ app.put('/categories/:id', requirePermissions('recipes:update'), async (c) => {
  * Delete a category
  */
 app.delete('/categories/:id', requirePermissions('recipes:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categoryId = c.req.param('id');
 
   await recipeService.deleteCategory(categoryId, organizationId);
@@ -102,7 +102,7 @@ app.delete('/categories/:id', requirePermissions('recipes:delete'), async (c) =>
  * List all recipes with optional filters
  */
 app.get('/', requirePermissions('recipes:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const categoryId = c.req.query('categoryId');
   const status = c.req.query('status');
   const search = c.req.query('search');
@@ -124,7 +124,7 @@ app.get('/', requirePermissions('recipes:read'), async (c) => {
  * Get recipe statistics
  */
 app.get('/stats', requirePermissions('recipes:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const stats = await recipeService.getStats(organizationId);
 
   return c.json({
@@ -138,7 +138,7 @@ app.get('/stats', requirePermissions('recipes:read'), async (c) => {
  * Get a single recipe with all details
  */
 app.get('/:id', requirePermissions('recipes:read'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recipeId = c.req.param('id');
 
   const recipe = await recipeService.getRecipeById(organizationId, recipeId);
@@ -161,7 +161,7 @@ app.get('/:id', requirePermissions('recipes:read'), async (c) => {
  * Create a new recipe
  */
 app.post('/', requirePermissions('recipes:create'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const userId = c.get('userId');
   const body = await c.req.json();
 
@@ -209,7 +209,7 @@ app.post('/', requirePermissions('recipes:create'), async (c) => {
  * Update a recipe
  */
 app.put('/:id', requirePermissions('recipes:update'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recipeId = c.req.param('id');
   const body = await c.req.json();
 
@@ -237,7 +237,7 @@ app.put('/:id', requirePermissions('recipes:update'), async (c) => {
  * Delete a recipe
  */
 app.delete('/:id', requirePermissions('recipes:delete'), async (c) => {
-  const organizationId = c.get('organizationId');
+  const organizationId = c.get('organizationId')!;
   const recipeId = c.req.param('id');
 
   await recipeService.deleteRecipe(recipeId, organizationId);

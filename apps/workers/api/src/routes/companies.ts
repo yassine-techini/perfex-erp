@@ -25,7 +25,7 @@ companies.get(
   requirePermission('crm:companies:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const type = c.req.query('type');
       const status = c.req.query('status');
       const assignedTo = c.req.query('assignedTo');
@@ -66,7 +66,7 @@ companies.get(
   requirePermission('crm:companies:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const stats = await companyService.getStats(organizationId);
 
       return c.json({
@@ -95,7 +95,7 @@ companies.get(
   requirePermission('crm:companies:read'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const companyId = c.req.param('id');
 
       const company = await companyService.getById(organizationId, companyId);
@@ -131,7 +131,7 @@ companies.post(
   zValidator('json', createCompanySchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const userId = c.get('userId');
       const data = c.req.valid('json');
 
@@ -164,7 +164,7 @@ companies.put(
   zValidator('json', updateCompanySchema),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const companyId = c.req.param('id');
       const data = c.req.valid('json');
 
@@ -196,7 +196,7 @@ companies.delete(
   requirePermission('crm:companies:delete'),
   async (c) => {
     try {
-      const organizationId = c.get('organizationId');
+      const organizationId = c.get('organizationId')!;
       const companyId = c.req.param('id');
 
       await companyService.delete(organizationId, companyId);
