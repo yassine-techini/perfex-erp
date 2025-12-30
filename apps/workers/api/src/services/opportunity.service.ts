@@ -65,7 +65,7 @@ export class OpportunityService {
       .select()
       .from(opportunities)
       .where(and(eq(opportunities.id, opportunityId), eq(opportunities.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return opportunity || null;
   }
@@ -84,7 +84,7 @@ export class OpportunityService {
       .select()
       .from(companies)
       .where(eq(companies.id, opportunity.companyId))
-      .get();
+      .get() as any;
 
     if (!company) {
       throw new Error('Company not found');
@@ -96,14 +96,14 @@ export class OpportunityService {
         .select()
         .from(contacts)
         .where(eq(contacts.id, opportunity.contactId))
-        .get();
+        .get() as any;
     }
 
     const stage = await drizzleDb
       .select()
       .from(pipelineStages)
       .where(eq(pipelineStages.id, opportunity.stageId))
-      .get();
+      .get() as any;
 
     if (!stage) {
       throw new Error('Pipeline stage not found');
@@ -161,7 +161,7 @@ export class OpportunityService {
       query = query.where(and(eq(opportunities.organizationId, organizationId), lte(opportunities.value, filters.maxValue)));
     }
 
-    const results = await query.orderBy(desc(opportunities.createdAt)).all();
+    const results = await query.orderBy(desc(opportunities.createdAt)).all() as any[];
     return results;
   }
 

@@ -107,7 +107,7 @@ export class PatientService {
       .select()
       .from(dialysePatients)
       .where(and(eq(dialysePatients.id, patientId), eq(dialysePatients.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return patient || null;
   }
@@ -125,7 +125,7 @@ export class PatientService {
       .select()
       .from(contacts)
       .where(eq(contacts.id, patient.contactId))
-      .get();
+      .get() as any;
 
     if (!contact) {
       return null;
@@ -157,7 +157,7 @@ export class PatientService {
           eq(dialysePrescriptions.status, 'active')
         )
       )
-      .get();
+      .get() as any;
 
     // Get all vascular accesses
     const vascularAccessesList = await drizzleDb
@@ -170,7 +170,7 @@ export class PatientService {
         )
       )
       .orderBy(desc(vascularAccesses.createdAt))
-      .all();
+      .all() as any[];
 
     // Get active vascular access
     const activeVascularAccess = vascularAccessesList.find((a) => a.status === 'active') || null;
@@ -187,7 +187,7 @@ export class PatientService {
       )
       .orderBy(desc(labResults.labDate))
       .limit(1)
-      .get();
+      .get() as any;
 
     // Get active alerts
     const activeAlertsList = await drizzleDb
@@ -201,7 +201,7 @@ export class PatientService {
         )
       )
       .orderBy(desc(clinicalAlerts.createdAt))
-      .all();
+      .all() as any[];
 
     return {
       ...patientWithContact,
@@ -239,14 +239,14 @@ export class PatientService {
       .limit(limit)
       .offset(offset);
 
-    const patients = await patientsQuery.all();
+    const patients = await patientsQuery.all() as any[];
 
     // Get total count
     const countResult = await drizzleDb
       .select({ count: sql<number>`count(*)` })
       .from(dialysePatients)
       .where(and(...conditions))
-      .get();
+      .get() as any;
 
     const total = countResult?.count || 0;
 
@@ -430,7 +430,7 @@ export class PatientService {
       .select()
       .from(dialysePatients)
       .where(eq(dialysePatients.organizationId, organizationId))
-      .all();
+      .all() as any[];
 
     const activePatients = patients.filter((p) => p.patientStatus === 'active').length;
     const isolationPatients = patients.filter((p) => p.requiresIsolation).length;

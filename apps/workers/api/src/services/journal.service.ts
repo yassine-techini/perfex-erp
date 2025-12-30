@@ -30,7 +30,7 @@ export class JournalService {
           eq(journals.code, data.code)
         )
       )
-      .get();
+      .get() as any;
 
     if (existing) {
       throw new Error('Journal code already exists');
@@ -54,7 +54,7 @@ export class JournalService {
       .select()
       .from(journals)
       .where(eq(journals.id, journalId))
-      .get();
+      .get() as any;
 
     if (!journal) {
       throw new Error('Failed to create journal');
@@ -76,7 +76,7 @@ export class JournalService {
       .select()
       .from(journals)
       .where(eq(journals.organizationId, organizationId))
-      .all();
+      .all() as any[];
 
     // Filter by type if provided
     let filtered = journalsList;
@@ -105,7 +105,7 @@ export class JournalService {
           eq(journals.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!journal) {
       throw new Error('Journal not found');

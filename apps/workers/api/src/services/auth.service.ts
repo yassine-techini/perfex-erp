@@ -98,7 +98,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.email, data.email))
-      .get();
+      .get() as any;
 
     if (existingUser) {
       throw new Error('Email already registered');
@@ -128,7 +128,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.id, userId))
-      .get();
+      .get() as any;
 
     if (!user) {
       throw new Error('Failed to create user');
@@ -204,7 +204,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.email, data.email))
-      .get();
+      .get() as any;
 
     if (!user) {
       throw new Error('Invalid email or password');
@@ -233,7 +233,7 @@ export class AuthService {
       .select()
       .from(organizationMembers)
       .where(eq(organizationMembers.userId, user.id))
-      .get();
+      .get() as any;
 
     // Generate tokens
     const tokens = await this.generateTokens(
@@ -282,7 +282,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.id, payload.sub))
-      .get();
+      .get() as any;
 
     if (!user || !user.active) {
       throw new Error('User not found or inactive');
@@ -335,7 +335,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.id, userId))
-      .get();
+      .get() as any;
 
     if (!user) {
       throw new Error('User not found');
@@ -366,7 +366,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.id, userId))
-      .get();
+      .get() as any;
 
     if (!user) {
       throw new Error('User not found');
@@ -400,7 +400,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.email, email))
-      .get();
+      .get() as any;
 
     // Don't reveal if user exists
     if (!user) {
@@ -450,7 +450,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.email, email))
-      .get();
+      .get() as any;
 
     // Don't reveal if user exists
     if (!user) {
@@ -507,7 +507,7 @@ export class AuthService {
       .select()
       .from(users)
       .where(eq(users.id, userId))
-      .get();
+      .get() as any;
 
     if (!user || !user.active) {
       throw new Error('User not found or inactive');

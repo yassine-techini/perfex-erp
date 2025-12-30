@@ -43,7 +43,7 @@ export class PipelineService {
       .select()
       .from(pipelineStages)
       .where(and(eq(pipelineStages.id, stageId), eq(pipelineStages.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return stage || null;
   }
@@ -61,7 +61,7 @@ export class PipelineService {
       query = query.where(and(eq(pipelineStages.organizationId, organizationId), eq(pipelineStages.active, true)));
     }
 
-    const results = await query.orderBy(asc(pipelineStages.order)).all();
+    const results = await query.orderBy(asc(pipelineStages.order)).all() as any[];
     return results;
   }
 

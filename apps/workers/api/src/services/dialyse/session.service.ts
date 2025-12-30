@@ -79,7 +79,7 @@ export class SessionService {
       .select()
       .from(dialysisSessionSlots)
       .where(and(eq(dialysisSessionSlots.id, slotId), eq(dialysisSessionSlots.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!slot) return null;
 
@@ -103,7 +103,7 @@ export class SessionService {
       .from(dialysisSessionSlots)
       .where(and(...conditions))
       .orderBy(dialysisSessionSlots.startTime)
-      .all();
+      .all() as any[];
 
     return slots.map((slot) => ({
       ...slot,
@@ -159,7 +159,7 @@ export class SessionService {
       .select()
       .from(dialysePatients)
       .where(and(eq(dialysePatients.id, data.patientId), eq(dialysePatients.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!patient) {
       throw new Error('Patient not found');
@@ -170,7 +170,7 @@ export class SessionService {
       .select()
       .from(dialysePrescriptions)
       .where(and(eq(dialysePrescriptions.id, data.prescriptionId), eq(dialysePrescriptions.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!prescription) {
       throw new Error('Prescription not found');
@@ -181,7 +181,7 @@ export class SessionService {
       .select({ count: sql<number>`count(*)` })
       .from(dialysisSessions)
       .where(eq(dialysisSessions.organizationId, organizationId))
-      .get();
+      .get() as any;
     const count = (countResult?.count || 0) + 1;
     const sessionNumber = `SES-${now.getFullYear()}-${String(count).padStart(6, '0')}`;
 
@@ -231,7 +231,7 @@ export class SessionService {
       .select()
       .from(dialysePrescriptions)
       .where(eq(dialysePrescriptions.id, data.prescriptionId))
-      .get();
+      .get() as any;
 
     if (!prescription) {
       throw new Error('Prescription not found');
@@ -268,7 +268,7 @@ export class SessionService {
       .select()
       .from(dialysisSessions)
       .where(and(eq(dialysisSessions.id, sessionId), eq(dialysisSessions.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return session as DialysisSession | null;
   }
@@ -285,7 +285,7 @@ export class SessionService {
       .select()
       .from(dialysePatients)
       .where(eq(dialysePatients.id, session.patientId))
-      .get();
+      .get() as any;
 
     const contact = patient
       ? await drizzleDb
@@ -300,7 +300,7 @@ export class SessionService {
       .select()
       .from(dialysePrescriptions)
       .where(eq(dialysePrescriptions.id, session.prescriptionId))
-      .get();
+      .get() as any;
 
     // Get machine
     const machine = session.machineId
@@ -378,7 +378,7 @@ export class SessionService {
       .from(dialysisSessions)
       .where(and(...conditions))
       .orderBy(dialysisSessions.sessionDate, dialysisSessions.scheduledStartTime)
-      .all();
+      .all() as any[];
 
     return sessions as DialysisSession[];
   }
@@ -394,7 +394,7 @@ export class SessionService {
         and(eq(dialysisSessions.patientId, patientId), eq(dialysisSessions.organizationId, organizationId))
       )
       .orderBy(desc(dialysisSessions.sessionDate))
-      .all();
+      .all() as any[];
 
     return sessions as DialysisSession[];
   }
@@ -628,7 +628,7 @@ export class SessionService {
       .select()
       .from(sessionRecords)
       .where(eq(sessionRecords.id, recordId))
-      .get();
+      .get() as any;
 
     return record as SessionRecord;
   }
@@ -642,7 +642,7 @@ export class SessionService {
       .from(sessionRecords)
       .where(eq(sessionRecords.sessionId, sessionId))
       .orderBy(sessionRecords.recordTime)
-      .all();
+      .all() as any[];
 
     return records as SessionRecord[];
   }
@@ -684,7 +684,7 @@ export class SessionService {
       .select()
       .from(sessionIncidents)
       .where(eq(sessionIncidents.id, incidentId))
-      .get();
+      .get() as any;
 
     return incident as SessionIncident;
   }
@@ -698,7 +698,7 @@ export class SessionService {
       .from(sessionIncidents)
       .where(eq(sessionIncidents.sessionId, sessionId))
       .orderBy(sessionIncidents.incidentTime)
-      .all();
+      .all() as any[];
 
     return incidents as SessionIncident[];
   }
@@ -731,7 +731,7 @@ export class SessionService {
       .select()
       .from(sessionMedications)
       .where(eq(sessionMedications.id, medicationId))
-      .get();
+      .get() as any;
 
     return medication as SessionMedication;
   }
@@ -745,7 +745,7 @@ export class SessionService {
       .from(sessionMedications)
       .where(eq(sessionMedications.sessionId, sessionId))
       .orderBy(sessionMedications.administeredAt)
-      .all();
+      .all() as any[];
 
     return medications as SessionMedication[];
   }
@@ -775,7 +775,7 @@ export class SessionService {
       .select()
       .from(sessionConsumables)
       .where(eq(sessionConsumables.id, consumableId))
-      .get();
+      .get() as any;
 
     return consumable as SessionConsumable;
   }
@@ -788,7 +788,7 @@ export class SessionService {
       .select()
       .from(sessionConsumables)
       .where(eq(sessionConsumables.sessionId, sessionId))
-      .all();
+      .all() as any[];
 
     return consumables as SessionConsumable[];
   }
@@ -823,7 +823,7 @@ export class SessionService {
       .select()
       .from(sessionSignatures)
       .where(eq(sessionSignatures.id, signatureId))
-      .get();
+      .get() as any;
 
     return signature as SessionSignature;
   }
@@ -837,7 +837,7 @@ export class SessionService {
       .from(sessionSignatures)
       .where(eq(sessionSignatures.sessionId, sessionId))
       .orderBy(sessionSignatures.signedAt)
-      .all();
+      .all() as any[];
 
     return signatures as SessionSignature[];
   }
@@ -870,7 +870,7 @@ export class SessionService {
       .select()
       .from(dialysisSessions)
       .where(and(...conditions))
-      .all();
+      .all() as any[];
 
     const completed = sessions.filter((s) => s.status === 'completed');
     const totalDuration = completed.reduce((sum, s) => sum + (s.actualDurationMinutes || 0), 0);
@@ -883,7 +883,7 @@ export class SessionService {
         .select({ count: sql<number>`count(*)` })
         .from(sessionIncidents)
         .where(sql`${sessionIncidents.sessionId} IN (${sessionIds.join(',')})`)
-        .get();
+        .get() as any;
       incidentCount = incidents?.count || 0;
     }
 

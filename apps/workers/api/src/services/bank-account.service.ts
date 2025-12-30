@@ -31,7 +31,7 @@ export class BankAccountService {
             eq(accounts.organizationId, organizationId)
           )
         )
-        .get();
+        .get() as any;
 
       if (!account) {
         throw new Error('Linked account not found');
@@ -67,7 +67,7 @@ export class BankAccountService {
       .select()
       .from(bankAccounts)
       .where(eq(bankAccounts.id, bankAccountId))
-      .get();
+      .get() as any;
 
     if (!bankAccount) {
       throw new Error('Failed to create bank account');
@@ -89,7 +89,7 @@ export class BankAccountService {
       .select()
       .from(bankAccounts)
       .where(eq(bankAccounts.organizationId, organizationId))
-      .all();
+      .all() as any[];
 
     // Filter by active if provided
     let filtered = bankAccountsList;
@@ -115,7 +115,7 @@ export class BankAccountService {
           eq(bankAccounts.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!bankAccount) {
       throw new Error('Bank account not found');

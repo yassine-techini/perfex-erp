@@ -30,7 +30,7 @@ export class AccountService {
           eq(accounts.code, data.code)
         )
       )
-      .get();
+      .get() as any;
 
     if (existing) {
       throw new Error('Account code already exists');
@@ -58,7 +58,7 @@ export class AccountService {
       .select()
       .from(accounts)
       .where(eq(accounts.id, accountId))
-      .get();
+      .get() as any;
 
     if (!account) {
       throw new Error('Failed to create account');
@@ -81,7 +81,7 @@ export class AccountService {
       .from(accounts)
       .where(eq(accounts.organizationId, organizationId));
 
-    const accountsList = await query.all();
+    const accountsList = await query.all() as any[];
 
     // Filter by type if provided
     let filtered = accountsList;
@@ -110,7 +110,7 @@ export class AccountService {
           eq(accounts.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!account) {
       throw new Error('Account not found');

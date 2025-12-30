@@ -30,7 +30,7 @@ export class InvoiceService {
       .where(eq(invoices.organizationId, organizationId))
       .orderBy(desc(invoices.createdAt))
       .limit(1)
-      .get();
+      .get() as any;
 
     // Extract number from last invoice (e.g., "INV-2024-001" -> 1)
     let nextNumber = 1;
@@ -80,7 +80,7 @@ export class InvoiceService {
               eq(taxRates.organizationId, organizationId)
             )
           )
-          .get();
+          .get() as any;
 
         if (taxRateRecord) {
           taxRate = taxRateRecord.rate;
@@ -179,7 +179,7 @@ export class InvoiceService {
           eq(invoices.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!invoice) {
       throw new Error('Invoice not found');
@@ -190,7 +190,7 @@ export class InvoiceService {
       .select()
       .from(invoiceLines)
       .where(eq(invoiceLines.invoiceId, invoiceId))
-      .all();
+      .all() as any[];
 
     return {
       ...(invoice as Invoice),
@@ -219,7 +219,7 @@ export class InvoiceService {
       .from(invoices)
       .where(eq(invoices.organizationId, organizationId))
       .orderBy(desc(invoices.date))
-      .all();
+      .all() as any[];
 
     // Filter in memory
     let filtered = invoicesList;

@@ -59,7 +59,7 @@ export class InventoryService {
       .select()
       .from(inventoryItems)
       .where(and(eq(inventoryItems.id, itemId), eq(inventoryItems.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return item || null;
   }
@@ -103,7 +103,7 @@ export class InventoryService {
       );
     }
 
-    const results = await query.orderBy(desc(inventoryItems.createdAt)).all();
+    const results = await query.orderBy(desc(inventoryItems.createdAt)).all() as any[];
     return results;
   }
 
@@ -203,7 +203,7 @@ export class InventoryService {
       .select()
       .from(warehouses)
       .where(and(eq(warehouses.id, warehouseId), eq(warehouses.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return warehouse || null;
   }
@@ -222,7 +222,7 @@ export class InventoryService {
       query = query.where(and(eq(warehouses.organizationId, organizationId), eq(warehouses.active, isActive)));
     }
 
-    const results = await query.orderBy(desc(warehouses.createdAt)).all();
+    const results = await query.orderBy(desc(warehouses.createdAt)).all() as any[];
     return results;
   }
 

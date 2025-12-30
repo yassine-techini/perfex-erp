@@ -69,7 +69,7 @@ export class ContactService {
       .select()
       .from(contacts)
       .where(and(eq(contacts.id, contactId), eq(contacts.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return contact || null;
   }
@@ -89,7 +89,7 @@ export class ContactService {
         .select()
         .from(companies)
         .where(eq(companies.id, contact.companyId))
-        .get();
+        .get() as any;
     }
 
     return {
@@ -144,7 +144,7 @@ export class ContactService {
       );
     }
 
-    const results = await query.orderBy(desc(contacts.createdAt)).all();
+    const results = await query.orderBy(desc(contacts.createdAt)).all() as any[];
     return results;
   }
 

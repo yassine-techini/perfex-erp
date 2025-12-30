@@ -41,7 +41,7 @@ export class JournalEntryService {
           eq(journals.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!journal) {
       throw new Error('Journal not found');
@@ -59,7 +59,7 @@ export class JournalEntryService {
       )
       .orderBy(desc(journalEntries.createdAt))
       .limit(1)
-      .get();
+      .get() as any;
 
     // Extract number from last reference (e.g., "VEN-2024-001" -> 1)
     let nextNumber = 1;
@@ -96,7 +96,7 @@ export class JournalEntryService {
           eq(journals.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!journal) {
       throw new Error('Journal not found');
@@ -113,7 +113,7 @@ export class JournalEntryService {
             eq(accounts.organizationId, organizationId)
           )
         )
-        .get();
+        .get() as any;
 
       if (!account) {
         throw new Error(`Account ${line.accountId} not found`);
@@ -191,7 +191,7 @@ export class JournalEntryService {
           eq(journalEntries.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!entry) {
       throw new Error('Journal entry not found');
@@ -202,14 +202,14 @@ export class JournalEntryService {
       .select()
       .from(journalEntryLines)
       .where(eq(journalEntryLines.entryId, entryId))
-      .all();
+      .all() as any[];
 
     // Get journal
     const journal = await drizzleDb
       .select()
       .from(journals)
       .where(eq(journals.id, entry.journalId))
-      .get();
+      .get() as any;
 
     if (!journal) {
       throw new Error('Journal not found');
@@ -244,7 +244,7 @@ export class JournalEntryService {
       .where(eq(journalEntries.organizationId, organizationId))
       .orderBy(desc(journalEntries.date));
 
-    const entriesList = await query.all();
+    const entriesList = await query.all() as any[];
 
     // Filter in memory (Drizzle with D1 has limited filtering capabilities)
     let filtered = entriesList;

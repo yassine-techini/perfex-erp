@@ -37,7 +37,7 @@ export class ReportService {
           eq(accounts.organizationId, organizationId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!account) {
       throw new Error('Account not found');
@@ -69,7 +69,7 @@ export class ReportService {
         )
       )
       .orderBy(journalEntries.date)
-      .all();
+      .all() as any[];
 
     // Calculate running balance
     let balance = 0;
@@ -124,7 +124,7 @@ export class ReportService {
       // Note: Drizzle with D1 doesn't support inArray, so we'll filter in memory
     }
 
-    const accountsList = await accountsQuery.all();
+    const accountsList = await accountsQuery.all() as any[];
 
     // Calculate totals for each account
     const trialBalance: TrialBalanceEntry[] = [];
@@ -152,7 +152,7 @@ export class ReportService {
             lte(journalEntries.date, endDate)
           )
         )
-        .all();
+        .all() as any[];
 
       // Calculate totals
       const debit = lines.reduce((sum, line) => sum + line.debit, 0);
@@ -211,7 +211,7 @@ export class ReportService {
           eq(accounts.active, true)
         )
       )
-      .all();
+      .all() as any[];
 
     const assets: TrialBalanceEntry[] = [];
     const liabilities: TrialBalanceEntry[] = [];
@@ -234,7 +234,7 @@ export class ReportService {
             lte(journalEntries.date, date)
           )
         )
-        .all();
+        .all() as any[];
 
       const debit = lines.reduce((sum, line) => sum + line.debit, 0);
       const credit = lines.reduce((sum, line) => sum + line.credit, 0);
@@ -304,7 +304,7 @@ export class ReportService {
           eq(accounts.active, true)
         )
       )
-      .all();
+      .all() as any[];
 
     const revenue: TrialBalanceEntry[] = [];
     const expenses: TrialBalanceEntry[] = [];
@@ -332,7 +332,7 @@ export class ReportService {
             lte(journalEntries.date, endDate)
           )
         )
-        .all();
+        .all() as any[];
 
       const debit = lines.reduce((sum, line) => sum + line.debit, 0);
       const credit = lines.reduce((sum, line) => sum + line.credit, 0);

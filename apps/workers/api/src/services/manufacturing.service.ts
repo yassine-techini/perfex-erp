@@ -83,7 +83,7 @@ export class ManufacturingService {
       .select()
       .from(billOfMaterials)
       .where(and(eq(billOfMaterials.id, bomId), eq(billOfMaterials.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return bom || null;
   }
 
@@ -98,7 +98,7 @@ export class ManufacturingService {
       query = query.where(and(eq(billOfMaterials.organizationId, organizationId), eq(billOfMaterials.status, filters.status as any)));
     }
 
-    return await query.orderBy(desc(billOfMaterials.createdAt)).all();
+    return await query.orderBy(desc(billOfMaterials.createdAt)).all() as any[];
   }
 
   async updateBOM(organizationId: string, bomId: string, data: UpdateBOMInput): Promise<BillOfMaterials> {
@@ -183,7 +183,7 @@ export class ManufacturingService {
       .select()
       .from(routings)
       .where(and(eq(routings.id, routingId), eq(routings.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return routing || null;
   }
 
@@ -198,7 +198,7 @@ export class ManufacturingService {
       query = query.where(and(eq(routings.organizationId, organizationId), eq(routings.status, filters.status as any)));
     }
 
-    return await query.orderBy(desc(routings.createdAt)).all();
+    return await query.orderBy(desc(routings.createdAt)).all() as any[];
   }
 
   async updateRouting(organizationId: string, routingId: string, data: UpdateRoutingInput): Promise<Routing> {
@@ -269,7 +269,7 @@ export class ManufacturingService {
       .select()
       .from(workOrders)
       .where(and(eq(workOrders.id, workOrderId), eq(workOrders.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return workOrder || null;
   }
 
@@ -294,7 +294,7 @@ export class ManufacturingService {
       );
     }
 
-    return await query.orderBy(desc(workOrders.createdAt)).all();
+    return await query.orderBy(desc(workOrders.createdAt)).all() as any[];
   }
 
   async updateWorkOrder(organizationId: string, workOrderId: string, data: UpdateWorkOrderInput): Promise<WorkOrder> {

@@ -63,7 +63,7 @@ export class HRService {
       .select()
       .from(departments)
       .where(and(eq(departments.id, departmentId), eq(departments.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return department || null;
   }
@@ -82,7 +82,7 @@ export class HRService {
       query = query.where(and(eq(departments.organizationId, organizationId), eq(departments.active, isActive)));
     }
 
-    const results = await query.orderBy(desc(departments.createdAt)).all();
+    const results = await query.orderBy(desc(departments.createdAt)).all() as any[];
     return results;
   }
 
@@ -195,7 +195,7 @@ export class HRService {
       .select()
       .from(employees)
       .where(and(eq(employees.id, employeeId), eq(employees.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return employee || null;
   }
@@ -245,7 +245,7 @@ export class HRService {
       );
     }
 
-    const results = await query.orderBy(desc(employees.createdAt)).all();
+    const results = await query.orderBy(desc(employees.createdAt)).all() as any[];
     return results;
   }
 
@@ -349,7 +349,7 @@ export class HRService {
       .select()
       .from(leaveRequests)
       .where(and(eq(leaveRequests.id, leaveRequestId), eq(leaveRequests.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return leaveRequest || null;
   }
@@ -382,7 +382,7 @@ export class HRService {
       query = query.where(and(eq(leaveRequests.organizationId, organizationId), eq(leaveRequests.leaveType, filters.leaveType as any)));
     }
 
-    const results = await query.orderBy(desc(leaveRequests.createdAt)).all();
+    const results = await query.orderBy(desc(leaveRequests.createdAt)).all() as any[];
     return results;
   }
 

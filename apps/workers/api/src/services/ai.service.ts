@@ -122,7 +122,7 @@ export class AIService {
             eq(aiConversations.userId, userId)
           )
         )
-        .get();
+        .get() as any;
 
       if (!conversation) {
         throw new Error('Conversation not found');
@@ -238,7 +238,7 @@ export class AIService {
       )
       .orderBy(desc(aiConversations.updatedAt))
       .limit(limit)
-      .all();
+      .all() as any[];
 
     return conversations;
   }
@@ -259,7 +259,7 @@ export class AIService {
           eq(aiConversations.userId, userId)
         )
       )
-      .get();
+      .get() as any;
 
     if (!conversation) {
       throw new Error('Conversation not found');
@@ -318,7 +318,7 @@ export class AIService {
         .from(invoices)
         .where(eq(invoices.organizationId, organizationId))
         .limit(request.limit || 10)
-        .all();
+        .all() as any[];
 
       for (const invoice of invoiceResults) {
         results.push({
@@ -409,7 +409,7 @@ export class AIService {
           .select()
           .from(invoices)
           .where(eq(invoices.id, entityId))
-          .get();
+          .get() as any;
 
         if (!invoice) {
           throw new Error('Invoice not found');
@@ -495,7 +495,7 @@ export class AIService {
       query = query.where(eq(aiInsights.dismissed, filters.dismissed ? 1 : 0));
     }
 
-    const results = await query.orderBy(desc(aiInsights.createdAt)).limit(50).all();
+    const results = await query.orderBy(desc(aiInsights.createdAt)).limit(50).all() as any[];
 
     return results.map((r) => ({
       id: r.id,
@@ -544,7 +544,7 @@ export class AIService {
       .where(eq(aiUsage.organizationId, organizationId))
       .$dynamic();
 
-    const results = await query.orderBy(desc(aiUsage.createdAt)).limit(1000).all();
+    const results = await query.orderBy(desc(aiUsage.createdAt)).limit(1000).all() as any[];
 
     // Aggregate stats
     const stats = {

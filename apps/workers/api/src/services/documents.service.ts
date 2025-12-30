@@ -62,7 +62,7 @@ export class DocumentsService {
       .select()
       .from(documentCategories)
       .where(and(eq(documentCategories.id, categoryId), eq(documentCategories.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return category || null;
   }
 
@@ -72,7 +72,7 @@ export class DocumentsService {
       .from(documentCategories)
       .where(eq(documentCategories.organizationId, organizationId))
       .orderBy(desc(documentCategories.createdAt))
-      .all();
+      .all() as any[];
   }
 
   // ============================================
@@ -119,7 +119,7 @@ export class DocumentsService {
       .select()
       .from(documents)
       .where(and(eq(documents.id, documentId), eq(documents.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return document || null;
   }
 
@@ -148,7 +148,7 @@ export class DocumentsService {
       );
     }
 
-    return await query.orderBy(desc(documents.createdAt)).all();
+    return await query.orderBy(desc(documents.createdAt)).all() as any[];
   }
 
   async updateDocument(organizationId: string, documentId: string, data: UpdateDocumentInput): Promise<Document> {
@@ -241,7 +241,7 @@ export class DocumentsService {
       .select()
       .from(emailTemplates)
       .where(and(eq(emailTemplates.id, templateId), eq(emailTemplates.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return template || null;
   }
 
@@ -252,7 +252,7 @@ export class DocumentsService {
       query = query.where(and(eq(emailTemplates.organizationId, organizationId), eq(emailTemplates.category, category)));
     }
 
-    return await query.orderBy(desc(emailTemplates.createdAt)).all();
+    return await query.orderBy(desc(emailTemplates.createdAt)).all() as any[];
   }
 
   async queueEmail(organizationId: string, data: QueueEmailInput): Promise<void> {
@@ -320,7 +320,7 @@ export class DocumentsService {
       .select()
       .from(reports)
       .where(and(eq(reports.id, reportId), eq(reports.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return report || null;
   }
 
@@ -331,7 +331,7 @@ export class DocumentsService {
       query = query.where(and(eq(reports.organizationId, organizationId), eq(reports.category, category)));
     }
 
-    return await query.orderBy(desc(reports.createdAt)).all();
+    return await query.orderBy(desc(reports.createdAt)).all() as any[];
   }
 
   async getStats(organizationId: string): Promise<{

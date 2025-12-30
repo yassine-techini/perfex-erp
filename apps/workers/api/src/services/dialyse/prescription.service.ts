@@ -26,7 +26,7 @@ export class PrescriptionService {
       .select()
       .from(dialysePatients)
       .where(and(eq(dialysePatients.id, data.patientId), eq(dialysePatients.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!patient) {
       throw new Error('Patient not found');
@@ -49,7 +49,7 @@ export class PrescriptionService {
       .select({ count: sql<number>`count(*)` })
       .from(dialysePrescriptions)
       .where(eq(dialysePrescriptions.organizationId, organizationId))
-      .get();
+      .get() as any;
     const count = (countResult?.count || 0) + 1;
     const prescriptionNumber = `RX-${now.getFullYear()}-${String(count).padStart(5, '0')}`;
 
@@ -101,7 +101,7 @@ export class PrescriptionService {
       .select()
       .from(dialysePrescriptions)
       .where(and(eq(dialysePrescriptions.id, prescriptionId), eq(dialysePrescriptions.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return prescription as DialysePrescription || null;
   }
@@ -119,7 +119,7 @@ export class PrescriptionService {
       .select()
       .from(dialysePatients)
       .where(eq(dialysePatients.id, prescription.patientId))
-      .get();
+      .get() as any;
 
     if (!patient) {
       return null;
@@ -129,7 +129,7 @@ export class PrescriptionService {
       .select()
       .from(contacts)
       .where(eq(contacts.id, patient.contactId))
-      .get();
+      .get() as any;
 
     if (!contact) {
       return null;
@@ -158,7 +158,7 @@ export class PrescriptionService {
           eq(dialysePrescriptions.status, 'active')
         )
       )
-      .get();
+      .get() as any;
 
     return prescription as DialysePrescription || null;
   }
@@ -177,7 +177,7 @@ export class PrescriptionService {
         )
       )
       .orderBy(desc(dialysePrescriptions.createdAt))
-      .all();
+      .all() as any[];
 
     return prescriptions as DialysePrescription[];
   }
@@ -206,13 +206,13 @@ export class PrescriptionService {
       .orderBy(desc(dialysePrescriptions.createdAt))
       .limit(limit)
       .offset(offset)
-      .all();
+      .all() as any[];
 
     const countResult = await drizzleDb
       .select({ count: sql<number>`count(*)` })
       .from(dialysePrescriptions)
       .where(and(...conditions))
-      .get();
+      .get() as any;
 
     return {
       data: prescriptions as DialysePrescription[],

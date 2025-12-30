@@ -54,7 +54,7 @@ export class NotificationsService {
       .select()
       .from(notifications)
       .where(and(eq(notifications.id, notificationId), eq(notifications.organizationId, organizationId)))
-      .get();
+      .get() as any;
     return notification || null;
   }
 
@@ -74,7 +74,7 @@ export class NotificationsService {
       );
     }
 
-    return await query.orderBy(desc(notifications.createdAt)).limit(50).all();
+    return await query.orderBy(desc(notifications.createdAt)).limit(50).all() as any[];
   }
 
   async markAsRead(organizationId: string, userId: string, notificationIds: string[]): Promise<void> {
@@ -161,7 +161,7 @@ export class NotificationsService {
       query = query.where(and(eq(auditLogs.organizationId, organizationId), eq(auditLogs.userId, filters.userId)));
     }
 
-    return await query.orderBy(desc(auditLogs.createdAt)).limit(100).all();
+    return await query.orderBy(desc(auditLogs.createdAt)).limit(100).all() as any[];
   }
 
   // ============================================
@@ -179,7 +179,7 @@ export class NotificationsService {
           eq(systemSettings.key, key)
         )
       )
-      .get();
+      .get() as any;
     return setting || null;
   }
 
@@ -190,7 +190,7 @@ export class NotificationsService {
       query = query.where(and(eq(systemSettings.organizationId, organizationId), eq(systemSettings.category, category)));
     }
 
-    return await query.orderBy(desc(systemSettings.updatedAt)).all();
+    return await query.orderBy(desc(systemSettings.updatedAt)).all() as any[];
   }
 
   async createSetting(organizationId: string, userId: string, data: CreateSystemSettingInput): Promise<SystemSetting> {

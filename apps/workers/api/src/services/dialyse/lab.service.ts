@@ -46,7 +46,7 @@ export class LabService {
       .select()
       .from(dialysePatients)
       .where(and(eq(dialysePatients.id, data.patientId), eq(dialysePatients.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!patient) {
       throw new Error('Patient not found');
@@ -143,7 +143,7 @@ export class LabService {
       .select()
       .from(labResults)
       .where(and(eq(labResults.id, labId), eq(labResults.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     if (!result) return null;
 
@@ -183,13 +183,13 @@ export class LabService {
       .orderBy(desc(labResults.labDate))
       .limit(limit)
       .offset(offset)
-      .all();
+      .all() as any[];
 
     const countResult = await drizzleDb
       .select({ count: sql<number>`count(*)` })
       .from(labResults)
       .where(and(...conditions))
-      .get();
+      .get() as any;
 
     return {
       data: results.map((r) => ({
@@ -211,7 +211,7 @@ export class LabService {
       .where(and(eq(labResults.patientId, patientId), eq(labResults.organizationId, organizationId)))
       .orderBy(desc(labResults.labDate))
       .limit(1)
-      .get();
+      .get() as any;
 
     if (!result) return null;
 
@@ -335,7 +335,7 @@ export class LabService {
         )
       )
       .orderBy(labResults.labDate)
-      .all();
+      .all() as any[];
 
     return results
       .filter((r) => (r as any)[marker] !== null)
@@ -360,7 +360,7 @@ export class LabService {
         )
       )
       .orderBy(desc(labResults.labDate))
-      .all();
+      .all() as any[];
 
     // Group by patient and get latest for each
     const patientLatest = new Map<string, typeof results[0]>();
@@ -449,7 +449,7 @@ export class LabService {
       .select()
       .from(labResults)
       .where(and(...conditions))
-      .all();
+      .all() as any[];
 
     const ktVValues = results.filter((r) => r.ktV !== null).map((r) => r.ktV!);
     const hbValues = results.filter((r) => r.hemoglobin !== null).map((r) => r.hemoglobin!);

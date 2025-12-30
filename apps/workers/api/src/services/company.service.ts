@@ -59,7 +59,7 @@ export class CompanyService {
       .select()
       .from(companies)
       .where(and(eq(companies.id, companyId), eq(companies.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return company || null;
   }
@@ -108,7 +108,7 @@ export class CompanyService {
       );
     }
 
-    const results = await query.orderBy(desc(companies.createdAt)).all();
+    const results = await query.orderBy(desc(companies.createdAt)).all() as any[];
     return results;
   }
 

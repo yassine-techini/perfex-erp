@@ -139,7 +139,7 @@ export const protocolService = {
         eq(dialyseProtocols.id, id),
         eq(dialyseProtocols.organizationId, organizationId)
       ))
-      .get();
+      .get() as any;
     return result;
   },
 
@@ -303,7 +303,7 @@ export const staffService = {
         eq(dialyseStaff.id, id),
         eq(dialyseStaff.organizationId, organizationId)
       ))
-      .get();
+      .get() as any;
   },
 
   async create(organizationId: string, userId: string, data: Partial<InsertDialyseStaff>) {
@@ -471,7 +471,7 @@ export const billingService = {
         eq(dialyseBilling.id, id),
         eq(dialyseBilling.organizationId, organizationId)
       ))
-      .get();
+      .get() as any;
   },
 
   async create(organizationId: string, userId: string, data: Partial<InsertDialyseBilling>) {
@@ -654,7 +654,7 @@ export const transportService = {
         eq(dialyseTransport.id, id),
         eq(dialyseTransport.organizationId, organizationId)
       ))
-      .get();
+      .get() as any;
   },
 
   async create(organizationId: string, userId: string, data: Partial<InsertDialyseTransport>) {
@@ -830,7 +830,7 @@ export const consumablesService = {
         eq(dialyseConsumables.id, id),
         eq(dialyseConsumables.organizationId, organizationId)
       ))
-      .get();
+      .get() as any;
   },
 
   async create(organizationId: string, userId: string, data: Partial<InsertDialyseConsumable>) {

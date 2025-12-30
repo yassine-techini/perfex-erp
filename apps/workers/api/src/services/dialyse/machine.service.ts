@@ -61,7 +61,7 @@ export class MachineService {
       .select()
       .from(dialysisMachines)
       .where(and(eq(dialysisMachines.id, machineId), eq(dialysisMachines.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return machine as DialysisMachine || null;
   }
@@ -85,7 +85,7 @@ export class MachineService {
         )
       )
       .orderBy(desc(machineMaintenanceRecords.createdAt))
-      .all();
+      .all() as any[];
 
     return {
       ...machine,
@@ -117,13 +117,13 @@ export class MachineService {
       .orderBy(dialysisMachines.machineNumber)
       .limit(limit)
       .offset(offset)
-      .all();
+      .all() as any[];
 
     const countResult = await drizzleDb
       .select({ count: sql<number>`count(*)` })
       .from(dialysisMachines)
       .where(and(...conditions))
-      .get();
+      .get() as any;
 
     return {
       data: machines as DialysisMachine[],
@@ -153,7 +153,7 @@ export class MachineService {
       .from(dialysisMachines)
       .where(and(...conditions))
       .orderBy(dialysisMachines.machineNumber)
-      .all();
+      .all() as any[];
 
     return machines as DialysisMachine[];
   }
@@ -247,7 +247,7 @@ export class MachineService {
       .select()
       .from(dialysisMachines)
       .where(eq(dialysisMachines.organizationId, organizationId))
-      .all();
+      .all() as any[];
 
     return {
       totalMachines: machines.length,
@@ -281,7 +281,7 @@ export class MachineService {
       .select({ count: sql<number>`count(*)` })
       .from(machineMaintenanceRecords)
       .where(eq(machineMaintenanceRecords.organizationId, organizationId))
-      .get();
+      .get() as any;
     const count = (countResult?.count || 0) + 1;
     const maintenanceNumber = `MNT-${now.getFullYear()}-${String(count).padStart(5, '0')}`;
 
@@ -317,7 +317,7 @@ export class MachineService {
       .select()
       .from(machineMaintenanceRecords)
       .where(and(eq(machineMaintenanceRecords.id, maintenanceId), eq(machineMaintenanceRecords.organizationId, organizationId)))
-      .get();
+      .get() as any;
 
     return record as MachineMaintenanceRecord || null;
   }
@@ -336,7 +336,7 @@ export class MachineService {
         )
       )
       .orderBy(desc(machineMaintenanceRecords.createdAt))
-      .all();
+      .all() as any[];
 
     return records as MachineMaintenanceRecord[];
   }
@@ -391,14 +391,14 @@ export class MachineService {
       .orderBy(desc(machineMaintenanceRecords.scheduledDate))
       .limit(limit)
       .offset(offset)
-      .all();
+      .all() as any[];
 
     // Get count
     const countResult = await drizzleDb
       .select({ count: sql<number>`count(*)` })
       .from(machineMaintenanceRecords)
       .where(and(...conditions))
-      .get();
+      .get() as any;
 
     const data = records.map((row) => ({
       id: row.id,
